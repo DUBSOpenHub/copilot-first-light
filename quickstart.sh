@@ -139,44 +139,22 @@ pause_gentle() {
 MENU_RESULT=0
 menu_select() {
   local options=("$@")
-  local selected=0
   local count=${#options[@]}
-  tput civis 2>/dev/null || true
   local i=0
   while [ $i -lt $count ]; do
-    if [ $i -eq $selected ]; then
-      printf "  ${GREEN}${BOLD}  ❯ ${options[$i]}${RESET}\n"
-    else
-      printf "  ${DIM}    ${options[$i]}${RESET}\n"
-    fi
+    printf "  ${GREEN}${BOLD}%d)${RESET}  %s\n" $(( i + 1 )) "${options[$i]}"
     i=$(( i + 1 ))
   done
+  echo ""
   while true; do
-    local key
-    IFS= read -r -s -n 1 key
-    if [[ "$key" == $'\x1b' ]]; then
-      read -r -s -n 2 -t 1 key || true
-      case "$key" in
-        '[A') [ $selected -gt 0 ] && selected=$(( selected - 1 )) ;;
-        '[B') [ $selected -lt $(( count - 1 )) ] && selected=$(( selected + 1 )) ;;
-      esac
-    elif [[ "$key" == "" ]]; then
+    printf "  ${CYAN}Enter a number (1-${count}):${RESET} "
+    read -r choice
+    if [[ "$choice" =~ ^[0-9]+$ ]] && [ "$choice" -ge 1 ] && [ "$choice" -le "$count" ]; then
+      MENU_RESULT=$(( choice - 1 ))
       break
     fi
-    printf "\033[${count}A"
-    i=0
-    while [ $i -lt $count ]; do
-      printf "\033[2K"
-      if [ $i -eq $selected ]; then
-        printf "  ${GREEN}${BOLD}  ❯ ${options[$i]}${RESET}\n"
-      else
-        printf "  ${DIM}    ${options[$i]}${RESET}\n"
-      fi
-      i=$(( i + 1 ))
-    done
+    printf "  ${DIM}Just type a number between 1 and ${count}.${RESET}\n"
   done
-  tput cnorm 2>/dev/null || true
-  MENU_RESULT=$selected
 }
 
 show_progress() {
@@ -959,7 +937,7 @@ pick_agent_phase() {
   printf "  "
   type_text "Pick the one that sounds most useful to you." 0.03
   echo ""
-  printf "  ${DIM}(Use arrow keys to move, Enter to select)${RESET}\n"
+  printf "  ${DIM}(Just type a number)${RESET}\n"
   echo ""
 
   menu_select \
@@ -1041,7 +1019,7 @@ pick_personality_phase() {
   printf "  "
   type_text "This sets the tone for everything it writes." 0.03
   echo ""
-  printf "  ${DIM}(Use arrow keys to move, Enter to select)${RESET}\n"
+  printf "  ${DIM}(Just type a number)${RESET}\n"
   echo ""
 
   menu_select \
