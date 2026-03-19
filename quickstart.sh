@@ -196,6 +196,47 @@ show_progress() {
 to_lower() { echo "$1" | tr '[:upper:]' '[:lower:]'; }
 to_upper_first() { echo "$(echo "${1:0:1}" | tr '[:lower:]' '[:upper:]')${1:1}"; }
 
+# Randomized positive responses
+random_name_reaction() {
+  local reactions=(
+    "I like it."
+    "That's a great name."
+    "Oh, fun name!"
+    "Sounds perfect."
+    "Nice pick."
+    "Has a good ring to it."
+  )
+  local idx=$(( RANDOM % 6 ))
+  echo "${reactions[$idx]}"
+}
+
+random_choice_reaction() {
+  local reactions=(
+    "Great choice!"
+    "Solid pick."
+    "Good one!"
+    "Nice — love that."
+    "Oh, that's a good one."
+    "Perfect."
+  )
+  local idx=$(( RANDOM % 6 ))
+  echo "${reactions[$idx]}"
+}
+
+random_greeting() {
+  local name="$1"
+  local greetings=(
+    "Nice to meet you, ${name}. Let's build something together."
+    "Hey ${name}! Let's make something cool."
+    "${name} — great name. Let's get started."
+    "Welcome, ${name}. This is going to be fun."
+    "Good to meet you, ${name}. Ready to build?"
+    "Alright ${name}, let's do this."
+  )
+  local idx=$(( RANDOM % 6 ))
+  echo "${greetings[$idx]}"
+}
+
 cleanup() {
   tput cnorm 2>/dev/null || true
   echo ""
@@ -896,7 +937,7 @@ welcome_phase() {
 
   echo ""
   printf "  "
-  type_text "Nice to meet you, ${USER_NAME}. Let's build something together." 0.03
+  type_text "$(random_greeting "${USER_NAME}")" 0.03
   echo ""
   pause_gentle "Press Enter when you're ready..."
 }
@@ -936,7 +977,7 @@ pick_agent_phase() {
   local chosen="${choice_labels[$AGENT_TYPE_INDEX]}"
 
   echo ""
-  printf "  ${GREEN}${CHECK}${RESET} Great choice — ${BOLD}${chosen}${RESET}.\n"
+  printf "  ${GREEN}${CHECK}${RESET} $(random_choice_reaction) ${BOLD}${chosen}${RESET}.\n"
   echo ""
   sleep 0.8
 }
@@ -978,7 +1019,7 @@ name_agent_phase() {
 
   echo ""
   printf "  "
-  type_text "${AGENT_NAME}. I like it." 0.04
+  type_text "${AGENT_NAME}. $(random_name_reaction)" 0.04
   echo ""
   sleep 0.6
 }
@@ -1379,7 +1420,7 @@ bridge_phase() {
   echo ""
   type_text "GitHub is where people keep the things they build." 0.03
   sleep 0.5
-  type_text "Developers use it. And now — people like you do too." 0.03
+  type_text "Developers use it. And now — AI-native builders like you do too." 0.03
   sleep 1.0
   echo ""
   type_text "If you grab a free GitHub account, you can:" 0.03
@@ -1400,8 +1441,8 @@ bridge_phase() {
   echo ""
 
   menu_select \
-    "✅  Yes, I'm all set" \
     "🆕  No, I'd like to claim one (free)" \
+    "✅  Yes, I'm all set" \
     "⏭️   Skip this for now"
 
   local bridge_choice=$MENU_RESULT
@@ -1410,43 +1451,76 @@ bridge_phase() {
 
   case $bridge_choice in
     0)
-      printf "  ${GREEN}${CHECK}${RESET} Awesome — you're all set.\n"
+      # No account — guide them to claim one
+      clear
+      echo ""
+      echo ""
+      printf "  "
+      type_text "Here's what's about to happen:" 0.03
       echo ""
       sleep 0.3
-      printf "  "
-      type_text "If you haven't logged in recently, you might need to run:" 0.03
-      echo ""
-      printf "  ${CYAN}  gh auth login${RESET}\n"
-      echo ""
-      ;;
-    1)
-      printf "  "
-      type_text "Here's what to do:" 0.03
-      echo ""
-      echo ""
-      printf "  ${BOLD}1.${RESET} Open this link: ${CYAN}${BOLD}github.com/signup${RESET}\n"
-      printf "  ${BOLD}2.${RESET} Pick a username (that's your developer name now!)\n"
-      printf "  ${BOLD}3.${RESET} Come back here when you're done\n"
-      echo ""
+      printf "  🌐  Your browser will open to GitHub's free signup page.\n"
       sleep 0.3
-      printf "  ${DIM}It takes about 2 minutes. Totally free. No credit card.${RESET}\n"
+      printf "  ✏️   Create your account — takes about a minute.\n"
+      sleep 0.3
+      printf "  🔙  Then come right back here. This window will be waiting.\n"
+      echo ""
+      sleep 0.5
+      separator
+      echo ""
+      printf "  ${BOLD}${CYAN}⚡  Don't close this window!${RESET}\n"
+      printf "  ${BOLD}${CYAN}    I'll be right here when you get back.${RESET}\n"
+      echo ""
+      sleep 0.8
+
+      pause_gentle "Ready? Press Enter to open your browser..."
+
       echo ""
 
-      # Try to open the browser automatically
+      # Countdown
+      local _ci
+      for _ci in 3 2 1; do
+        printf "\r  ${BOLD}${CYAN}  Opening in %d...${RESET}" "$_ci"
+        sleep 0.6
+      done
+      printf "\r  ${GREEN}${CHECK}  Browser opened!          ${RESET}\n"
+      echo ""
+
+      # Open browser
       if command -v open &>/dev/null; then
         open "https://github.com/signup" 2>/dev/null || true
       elif command -v xdg-open &>/dev/null; then
         xdg-open "https://github.com/signup" 2>/dev/null || true
+      else
+        printf "  Visit: ${CYAN}${BOLD}github.com/signup${RESET}\n"
       fi
+
+      echo ""
+      separator
+      echo ""
+      printf "  ${DIM}Go create your account now.${RESET}\n"
+      printf "  ${DIM}When you're done, come back to this terminal.${RESET}\n"
+      echo ""
 
       pause_gentle "Press Enter when you're back..."
 
       echo ""
       printf "  ${GREEN}${CHECK}${RESET} "
-      type_text "Welcome to GitHub, ${USER_NAME}." 0.04
+      type_text "Welcome back, ${USER_NAME}!" 0.04
       echo ""
       printf "  "
       type_text "Now run this to connect your account:" 0.03
+      echo ""
+      printf "  ${CYAN}  gh auth login${RESET}\n"
+      echo ""
+      ;;
+    1)
+      # Already has an account
+      printf "  ${GREEN}${CHECK}${RESET} Awesome — you're all set.\n"
+      echo ""
+      sleep 0.3
+      printf "  "
+      type_text "If you haven't logged in recently, you might need to run:" 0.03
       echo ""
       printf "  ${CYAN}  gh auth login${RESET}\n"
       echo ""
