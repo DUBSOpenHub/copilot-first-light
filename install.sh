@@ -232,8 +232,8 @@ main() {
   clear 2>/dev/null || true
   printf '\n'
   print_box
-  print_line "$DIM" "This keeps the setup gentle and out of the way."
   printf '\n'
+  sleep 1
 
   detect_os || die "This helper works on macOS and Linux."
   printf '  %b✅%b  %s\n' "$GREEN" "$RESET" "Computer check complete: $OS_NAME"
@@ -254,8 +254,8 @@ main() {
   run_with_spinner "Downloading the guided welcome" download_animated || die "I could not download the guided welcome."
 
   printf '\n'
-  print_note_box "Next comes the friendly guided welcome. Sit back and follow along."
-  printf '\n'
+  printf '  %bEverything is ready. Starting your experience...%b\n' "$DIM" "$RESET"
+  sleep 2
 
   if launch_animated; then
     handoff_to_gh || exit 0
