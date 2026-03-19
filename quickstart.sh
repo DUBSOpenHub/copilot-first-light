@@ -921,10 +921,14 @@ intro_cinematic() {
 # ---------------------------------------------------------------------------
 
 welcome_phase() {
-  # Run the cinematic intro FIRST
-  intro_cinematic
+  if [ "${COPILOT_FIRST_LIGHT_BOOTSTRAP:-}" != "1" ]; then
+    # Standalone — run the full cinematic
+    intro_cinematic
+  fi
 
-  # THEN ask for the user's name
+  # Continue the scroll — no clear
+  echo ""
+  echo ""
   printf "  What's your first name?\n\n"
   printf "  ${GREEN}>${RESET} "
   read -r USER_NAME
@@ -1630,8 +1634,14 @@ handoff_phase() {
 # ---------------------------------------------------------------------------
 
 main() {
-  install_phase
-  welcome_phase
+  if [ "${COPILOT_FIRST_LIGHT_BOOTSTRAP:-}" = "1" ]; then
+    # Launched from install.sh — cinematic and installs already done, don't clear
+    welcome_phase
+  else
+    # Standalone run — do everything
+    install_phase
+    welcome_phase
+  fi
   pick_agent_phase
   name_agent_phase
   pick_personality_phase
@@ -1642,4 +1652,7 @@ main() {
   handoff_phase
 }
 
-main "$@"
+# Only run main if not being sourced for functions
+if [ "${1:-}" != "--functions-only" ]; then
+  main "$@"
+fi

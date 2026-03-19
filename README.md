@@ -1,6 +1,6 @@
 # ✨ Copilot First Light
 
-> Build your first AI agent with GitHub Copilot CLI in 5 minutes. No coding. No experience needed.
+> Build your first AI agent with the GitHub Copilot CLI in 5 minutes. No coding. No experience needed.
 
 ---
 
@@ -16,18 +16,24 @@ Then paste:
 curl -fsSL https://raw.githubusercontent.com/DUBSOpenHub/copilot-first-light/main/install.sh | bash
 ```
 
-Everything else happens automatically. Just follow along. ✨
+That's it. One command. Everything happens automatically. ✨
 
 ---
 
 ## What happens when I paste that?
 
-1. It installs GitHub Copilot CLI (silently, no questions asked)
-2. A friendly guide walks you through building your first AI agent
-3. You pick what it does, give it a name, choose its personality
-4. You see it work — a real demo, right in front of you
-5. Your agent gets saved to your computer
-6. You can keep going inside GitHub Copilot CLI — just type `first light`
+One continuous experience — no interruptions:
+
+1. ✦ A cinematic intro lights up your terminal — stars, sparkles, the COPILOT logo
+2. ⚡ GitHub CLI and Copilot CLI install silently in the background
+3. 👋 A friendly guide asks your name and walks you through building your first AI agent
+4. 🤖 You pick what your agent does, name it, choose its personality
+5. 📁 Real files get created on your computer — you watch it happen
+6. 🎯 A live demo shows your agent in action
+7. 🌐 You claim a free GitHub account to save your work
+8. 🚀 You land in Copilot CLI ready to keep building
+
+All powered by the GitHub Copilot CLI.
 
 ---
 
@@ -45,4 +51,4 @@ Everything else happens automatically. Just follow along. ✨
 
 ---
 
-*Built for people who've never touched a terminal before.*
+*Built for people who've never touched a terminal before. All powered by the GitHub Copilot CLI.*

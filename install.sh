@@ -196,6 +196,7 @@ download_animated() {
 }
 
 launch_animated() {
+  export COPILOT_FIRST_LIGHT_BOOTSTRAP=1
   if [ -n "$TTY_DEV" ]; then
     bash "$ANIMATED_FILE" <"$TTY_DEV"
   else
@@ -230,39 +231,44 @@ die() {
 
 main() {
   clear 2>/dev/null || true
-  printf '\n'
-  print_box
-  printf '\n'
-  sleep 1
 
-  detect_os || die "This helper works on macOS and Linux."
-  printf '  %b✅%b  %s\n' "$GREEN" "$RESET" "Computer check complete: $OS_NAME"
+  # Scene 1: Cinematic intro — the wow moment, FIRST thing they see
+  # Download quickstart.sh silently, source it for the cinematic function
+  detect_os || die "This works on macOS and Linux."
+  download_animated 2>/dev/null
+
+  if [ -f "$ANIMATED_FILE" ]; then
+    # Source to get the cinematic function + colors, then run it
+    . "$ANIMATED_FILE" --functions-only 2>/dev/null || true
+    if type intro_cinematic >/dev/null 2>&1; then
+      intro_cinematic
+    fi
+  fi
+
+  # Scene 2: Install spinners flow right underneath the cinematic
+  echo ""
 
   if command_exists gh; then
-    printf '  %b✅%b  %s\n' "$GREEN" "$RESET" "GitHub CLI is already here"
+    printf '  %b✅%b  %s\n' "$GREEN" "$RESET" "GitHub CLI ready"
   else
-    run_with_spinner "Installing GitHub CLI" install_gh_cli || die "I could not install GitHub CLI just yet."
+    run_with_spinner "Setting up GitHub CLI" install_gh_cli || die "Could not install GitHub CLI."
   fi
 
   if gh copilot --help >/dev/null 2>&1; then
-    printf '  %b✅%b  %s\n' "$GREEN" "$RESET" "GitHub Copilot is already connected"
+    printf '  %b✅%b  %s\n' "$GREEN" "$RESET" "Copilot CLI ready"
   else
-    run_with_spinner "Adding GitHub Copilot" install_gh_copilot || die "I could not add GitHub Copilot."
+    run_with_spinner "Setting up Copilot CLI" install_gh_copilot || die "Could not set up Copilot CLI."
   fi
 
-  run_with_spinner "Adding the First Light guide" install_skill || die "I could not add the First Light guide."
-  run_with_spinner "Downloading the guided welcome" download_animated || die "I could not download the guided welcome."
+  run_with_spinner "Preparing your experience" install_skill || die "Could not add the guide."
 
-  printf '\n'
-  printf '  %bEverything is ready. Starting your experience...%b\n' "$DIM" "$RESET"
-  sleep 2
-
+  # Scene 3: Flows right into "Hey there" — no screen clear
   if launch_animated; then
     handoff_to_gh || exit 0
   fi
 
-  print_line "$YELLOW" "The guided welcome did not open, so I will take you straight to GitHub Copilot instead."
-  handoff_to_gh || die "Everything is installed, but I could not open GitHub Copilot."
+  print_line "$YELLOW" "Taking you straight to GitHub Copilot instead."
+  handoff_to_gh || die "Everything is installed, but could not open Copilot."
 }
 
 main "$@"
