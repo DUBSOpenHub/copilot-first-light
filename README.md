@@ -25,13 +25,13 @@ That's it. One command. Everything happens automatically. ✨
 One continuous experience — no interruptions:
 
 1. ✦ A cinematic intro lights up your terminal — stars, sparkles, the COPILOT logo
-2. ⚡ GitHub CLI and Copilot CLI install silently in the background
+2. ⚡ GitHub CLI and the Copilot CLI install silently in the background
 3. 👋 A friendly guide asks your name and walks you through building your first AI agent
 4. 🤖 You pick what your agent does, name it, choose its personality
 5. 📁 Real files get created on your computer — you watch it happen
 6. 🎯 A live demo shows your agent in action
 7. 🌐 You claim a free GitHub account to save your work
-8. 🚀 You land in Copilot CLI ready to keep building
+8. 🚀 You land in the Copilot CLI ready to keep building
 
 All powered by the GitHub Copilot CLI.
 

@@ -606,7 +606,7 @@ mkdir -p ~/my-first-agent
 ## How to Use {helper_name}
 
 1. Open your terminal
-2. Start GitHub Copilot CLI
+2. Start the GitHub Copilot CLI
 3. Tell it: "Use {helper_name}" or paste from the examples below
 
 ## Your Files
@@ -619,7 +619,7 @@ mkdir -p ~/my-first-agent
 
 ## Want to Rebuild or Improve?
 
-Just type `first light` in Copilot CLI. I'll remember you!
+Just type `first light` in the Copilot CLI. I'll remember you!
 
 ---
 *Built with 💜 using First Light*

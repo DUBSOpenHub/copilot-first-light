@@ -303,14 +303,14 @@ install_phase() {
 
   # --- Check / install Copilot CLI extension ---
   if gh copilot --version &>/dev/null 2>&1; then
-    show_progress "Copilot CLI ready" 1
+    show_progress "The Copilot CLI is ready" 1
   else
-    show_progress "Installing Copilot CLI..." 2
+    show_progress "Installing the Copilot CLI..." 2
     gh extension install github/gh-copilot &>/dev/null 2>&1 || true
     if gh copilot --version &>/dev/null 2>&1; then
-      show_progress "Copilot CLI installed" 1
+      show_progress "The Copilot CLI is installed" 1
     else
-      show_progress "Copilot CLI — we'll finish this later" 1
+      show_progress "The Copilot CLI — we'll finish this later" 1
     fi
   fi
 
@@ -1247,7 +1247,7 @@ show_creation_phase() {
   sleep 0.8
   type_text "That's what building feels like." 0.03
   sleep 0.8
-  type_text "And this is just the beginning of what ${CYAN}Copilot CLI${RESET} can do." 0.03
+  type_text "And this is just the beginning of what the ${CYAN}Copilot CLI${RESET} can do." 0.03
   sleep 1.2
   echo ""
 
@@ -1424,7 +1424,7 @@ bridge_phase() {
   echo ""
   type_text "GitHub is where people keep the things they build." 0.03
   sleep 0.5
-  type_text "Developers use it. And now — AI-native builders like you do too." 0.03
+  type_text "Developers use it. And now AI-native builders like yourself can too — and it's free." 0.03
   sleep 1.0
   echo ""
   type_text "If you grab a free GitHub account, you can:" 0.03
@@ -1564,7 +1564,7 @@ handoff_phase() {
   echo ""
   type_text "${AGENT_NAME} is your first build. It doesn't have to be your last." 0.03
   sleep 0.8
-  type_text "${CYAN}Copilot CLI${RESET} is how you build the next one." 0.03
+  type_text "${CYAN}The Copilot CLI${RESET} is how you build the next one." 0.03
   sleep 0.5
   type_text "Just open this terminal and start talking." 0.03
   sleep 1.6
@@ -1607,7 +1607,7 @@ handoff_phase() {
 
   # Attempt to launch Copilot CLI directly
   if gh copilot --version &>/dev/null 2>&1; then
-    printf "  ${BOLD}Launching Copilot CLI...${RESET}\n"
+    printf "  ${BOLD}Launching the Copilot CLI...${RESET}\n"
     printf "  ${DIM}Type ${RESET}${GREEN}first light${RESET}${DIM} to continue your journey.${RESET}\n"
     echo ""
     sleep 1.5
@@ -1616,7 +1616,7 @@ handoff_phase() {
     # Graceful fallback with manual instructions
     printf "  ${YELLOW}${BOLD}Almost there!${RESET}\n"
     echo ""
-    printf "  Copilot CLI isn't installed yet. Here's how to get it:\n"
+    printf "  The Copilot CLI isn't installed yet. Here's how to get it:\n"
     echo ""
     printf "  ${CYAN}  gh auth login${RESET}           ${DIM}← connect your GitHub account${RESET}\n"
     printf "  ${CYAN}  gh extension install github/gh-copilot${RESET}\n"

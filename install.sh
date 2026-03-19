@@ -255,9 +255,9 @@ main() {
   fi
 
   if gh copilot --help >/dev/null 2>&1; then
-    printf '  %b✅%b  %s\n' "$GREEN" "$RESET" "Copilot CLI ready"
+    printf '  %b✅%b  %s\n' "$GREEN" "$RESET" "The Copilot CLI is ready"
   else
-    run_with_spinner "Setting up Copilot CLI" install_gh_copilot || die "Could not set up Copilot CLI."
+    run_with_spinner "Setting up the Copilot CLI" install_gh_copilot || die "Could not set up the Copilot CLI."
   fi
 
   run_with_spinner "Preparing your experience" install_skill || die "Could not add the guide."

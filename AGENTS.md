@@ -17,11 +17,11 @@ This is the starting point. It's a friendly, animated script that runs in your t
 
 It takes about 5 minutes. No coding required.
 
-At the end, it saves your choices and hands you off to Copilot CLI for the deeper experience.
+At the end, it saves your choices and hands you off to the Copilot CLI for the deeper experience.
 
 ### 2. The Copilot CLI Skill (`SKILL.md`)
 
-This picks up where the quickstart left off. When you open Copilot CLI and type "first light", the skill:
+This picks up where the quickstart left off. When you open the Copilot CLI and type "first light", the skill:
 
 - Reads your saved choices from the quickstart
 - Welcomes you back by name
@@ -65,7 +65,7 @@ bash quickstart.sh
 ```
 
 **Coming back:**
-Open Copilot CLI and type "first light" — it'll pick up where you left off.
+Open the Copilot CLI and type "first light" — it'll pick up where you left off.
 
 ## Changing Things
 
