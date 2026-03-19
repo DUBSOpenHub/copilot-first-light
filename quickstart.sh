@@ -33,6 +33,19 @@ BLUE="\033[34m"
 WHITE="\033[97m"
 RED="\033[31m"
 
+# GitHub Copilot brand palette (256-color) — for cinematic intro
+COPILOT_BLUE=$'\033[38;5;75m'       # #6CB6FF — Copilot sky blue
+COPILOT_PURPLE=$'\033[38;5;141m'    # #B392F0 — Copilot purple
+COPILOT_GREEN=$'\033[38;5;114m'     # #7EE787 — GitHub green / success
+COPILOT_TEAL=$'\033[38;5;80m'       # #56D4DD — Copilot teal accent
+COPILOT_LAVENDER=$'\033[38;5;183m'  # #D2A8FF — light lavender
+COPILOT_MUTED=$'\033[38;5;245m'     # muted gray for subtle text
+COPILOT_GOLD=$'\033[38;5;220m'      # warm gold for sparkles
+COPILOT_PINK=$'\033[38;5;213m'      # soft pink accent
+COPILOT_ORANGE=$'\033[38;5;208m'    # warm orange glow
+COPILOT_CYAN_BRIGHT=$'\033[38;5;51m'  # bright cyan flash
+COPILOT_WHITE_BRIGHT=$'\033[38;5;231m' # pure bright white
+
 BOX_TL="╔" BOX_TR="╗" BOX_BL="╚" BOX_BR="╝"
 BOX_H="═" BOX_V="║"
 LINE_H="─"
@@ -59,6 +72,20 @@ term_width() {
   w=$(tput cols 2>/dev/null || echo 60)
   [[ $w -gt 80 ]] && w=80
   echo "$w"
+}
+
+# raw_term_width → stdout (actual terminal width, unclamped, for cinematic)
+raw_term_width() {
+  local w
+  w="$(tput cols 2>/dev/null || echo 80)"
+  printf '%s' "$w"
+}
+
+# raw_term_height → stdout (actual terminal height)
+raw_term_height() {
+  local h
+  h="$(tput lines 2>/dev/null || echo 24)"
+  printf '%s' "$h"
 }
 
 box() {
@@ -265,26 +292,598 @@ install_phase() {
 }
 
 # ---------------------------------------------------------------------------
+# Cinematic Intro — Pixar-level animated welcome sequence
+# ---------------------------------------------------------------------------
+
+intro_cinematic() {
+  clear
+  printf '\033[?25l'  # hide cursor
+
+  local cw ch center_x center_y
+  cw="$(raw_term_width)"
+  ch="$(raw_term_height)"
+  center_x=$(( cw / 2 ))
+  center_y=$(( ch / 2 ))
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # ACT 1: DARKNESS → SINGLE STAR → CONSTELLATION
+  # Like the first frame of a Pixar movie — total black, then... a twinkle.
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  sleep 0.5
+
+  # A single tiny star blinks on, center screen
+  printf '\033[%d;%dH%s✦%s' "$center_y" "$center_x" "${COPILOT_GOLD}" "${RESET}"
+  sleep 0.3
+  # It pulses: dim → bright → dim
+  printf '\033[%d;%dH%s✦%s' "$center_y" "$center_x" "${COPILOT_MUTED}" "${RESET}"
+  sleep 0.15
+  printf '\033[%d;%dH%s✦%s' "$center_y" "$center_x" "${COPILOT_WHITE_BRIGHT}" "${RESET}"
+  sleep 0.15
+  printf '\033[%d;%dH%s✧%s' "$center_y" "$center_x" "${COPILOT_GOLD}" "${RESET}"
+  sleep 0.2
+
+  # Stars appear around it — a constellation forming (inner ring)
+  local star_chars="✦ ✧ ⋆ ˚ · ✦ ✧ ⋆"
+  local s_arr
+  s_arr=($star_chars)
+  local angles=(-3 -2 -1 0 1 2 3)
+
+  local ring
+  for ring in 1 2 3; do
+    local radius=$(( ring * 3 ))
+    local si=0
+    for offset in -3 -2 -1 0 1 2 3; do
+      local sr=$(( center_y + offset * ring ))
+      local sc=$(( center_x + (offset * radius / 2) ))
+      # Keep within bounds
+      [ "$sr" -lt 1 ] && sr=1
+      [ "$sr" -gt "$ch" ] && sr="$ch"
+      [ "$sc" -lt 1 ] && sc=1
+      [ "$sc" -gt "$cw" ] && sc="$cw"
+      local scolor
+      case $(( (si + ring) % 5 )) in
+        0) scolor="${COPILOT_BLUE}" ;;
+        1) scolor="${COPILOT_PURPLE}" ;;
+        2) scolor="${COPILOT_GOLD}" ;;
+        3) scolor="${COPILOT_TEAL}" ;;
+        4) scolor="${COPILOT_PINK}" ;;
+      esac
+      printf '\033[%d;%dH%s%s%s' "$sr" "$sc" "$scolor" "${s_arr[$(( si % 8 ))]}" "${RESET}"
+      si=$(( si + 1 ))
+    done
+    sleep 0.12
+  done
+  sleep 0.3
+
+  # Flash — everything brightens for a split second
+  local flash_row
+  for flash_row in $(( center_y - 1 )) "$center_y" $(( center_y + 1 )); do
+    printf '\033[%d;%dH%s  ·  ✦  ⋆  ✧  ·  %s' "$flash_row" $(( center_x - 10 )) "${COPILOT_WHITE_BRIGHT}" "${RESET}"
+  done
+  sleep 0.08
+  clear
+  sleep 0.15
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # ACT 2: THE BIG BANG — particles explode outward from center
+  # Like the lamp jumping in the Pixar intro — kinetic energy
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  # Explosion ring 1 — close particles shoot out
+  local exp_syms="✦ ✧ ⋆ · ˚ ✦ ✧ ⋆ ˚ · ✦ ✧ · ⋆ ✧ ✦"
+  local e_arr
+  e_arr=($exp_syms)
+  local exp_colors
+  exp_colors=("${COPILOT_GOLD}" "${COPILOT_ORANGE}" "${COPILOT_PINK}" "${COPILOT_PURPLE}" "${COPILOT_BLUE}" "${COPILOT_TEAL}" "${COPILOT_CYAN_BRIGHT}" "${COPILOT_LAVENDER}")
+
+  local wave
+  for wave in 1 2 3 4 5; do
+    local spread=$(( wave * 3 ))
+    local angle
+    for angle in 0 1 2 3 4 5 6 7 8 9 10 11; do
+      # Place particles in a rough circle using angle offsets
+      local dy=0 dx=0
+      case "$angle" in
+        0)  dy=-1; dx=0  ;;
+        1)  dy=-1; dx=1  ;;
+        2)  dy=-1; dx=2  ;;
+        3)  dy=0;  dx=2  ;;
+        4)  dy=1;  dx=2  ;;
+        5)  dy=1;  dx=1  ;;
+        6)  dy=1;  dx=0  ;;
+        7)  dy=1;  dx=-1 ;;
+        8)  dy=1;  dx=-2 ;;
+        9)  dy=0;  dx=-2 ;;
+        10) dy=-1; dx=-2 ;;
+        11) dy=-1; dx=-1 ;;
+      esac
+      local pr=$(( center_y + dy * spread ))
+      local pc=$(( center_x + dx * spread ))
+      [ "$pr" -lt 1 ] && continue
+      [ "$pr" -gt "$ch" ] && continue
+      [ "$pc" -lt 1 ] && continue
+      [ "$pc" -gt "$cw" ] && continue
+      local ec="${exp_colors[$(( angle % 8 ))]}"
+      local es="${e_arr[$(( (angle + wave) % 16 ))]}"
+      printf '\033[%d;%dH%s%s%s' "$pr" "$pc" "$ec" "$es" "${RESET}"
+    done
+    sleep 0.06
+  done
+  sleep 0.15
+
+  # Quick fade — erase explosion particles (reverse order feels organic)
+  for wave in 5 4 3 2 1; do
+    local spread=$(( wave * 3 ))
+    for angle in 0 1 2 3 4 5 6 7 8 9 10 11; do
+      local dy=0 dx=0
+      case "$angle" in
+        0)  dy=-1; dx=0  ;;  1)  dy=-1; dx=1  ;;
+        2)  dy=-1; dx=2  ;;  3)  dy=0;  dx=2  ;;
+        4)  dy=1;  dx=2  ;;  5)  dy=1;  dx=1  ;;
+        6)  dy=1;  dx=0  ;;  7)  dy=1;  dx=-1 ;;
+        8)  dy=1;  dx=-2 ;;  9)  dy=0;  dx=-2 ;;
+        10) dy=-1; dx=-2 ;;  11) dy=-1; dx=-1 ;;
+      esac
+      local pr=$(( center_y + dy * spread ))
+      local pc=$(( center_x + dx * spread ))
+      [ "$pr" -lt 1 ] && continue
+      [ "$pr" -gt "$ch" ] && continue
+      [ "$pc" -lt 1 ] && continue
+      [ "$pc" -gt "$cw" ] && continue
+      printf '\033[%d;%dH ' "$pr" "$pc"
+    done
+    sleep 0.03
+  done
+  sleep 0.2
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # ACT 3: BRANDED GITHUB COPILOT — logo + Mona mascot
+  # Matches the official GitHub Copilot CLI banner
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  clear
+
+  # Big ASCII art letters (6 rows tall) — COPILOT block text
+  local L0=" ██████╗  ██████╗ ██████╗ ██╗██╗      ██████╗ ████████╗"
+  local L1="██╔════╝ ██╔═══██╗██╔══██╗██║██║     ██╔═══██╗╚══██╔══╝"
+  local L2="██║      ██║   ██║██████╔╝██║██║     ██║   ██║   ██║   "
+  local L3="██║      ██║   ██║██╔═══╝ ██║██║     ██║   ██║   ██║   "
+  local L4="╚██████╗ ╚██████╔╝██║     ██║███████╗╚██████╔╝   ██║   "
+  local L5=" ╚═════╝  ╚═════╝ ╚═╝     ╚═╝╚══════╝ ╚═════╝    ╚═╝   "
+
+  # Mona pixel-art mascot (8 rows tall, 20 wide)
+  local M0="       ▄█▄ ▄█▄      "
+  local M1="    ┌──▀█▀─▀█▀──┐   "
+  local M2="    │            │   "
+  local M3="  ▐█│ ████  ████ │█▌"
+  local M4="  ▐█│ ████  ████ │█▌"
+  local M5="  ▐█│            │█▌"
+  local M6="  ▐█│    ▐▌▐▌    │█▌"
+  local M7="    └────────────┘   "
+
+  local art_width=56
+  local mona_width=20
+  local mona_gap=2
+  local total_width=$(( art_width + mona_gap + mona_width ))
+
+  # If terminal too narrow for Mona, skip it
+  local show_mona=true
+  [ "$cw" -lt $(( total_width + 6 )) ] && show_mona=false
+
+  local art_start
+  if [ "$show_mona" = "true" ]; then
+    art_start=$(( center_x - total_width / 2 ))
+  else
+    art_start=$(( center_x - art_width / 2 ))
+  fi
+  [ "$art_start" -lt 2 ] && art_start=2
+
+  local title_top=$(( center_y - 5 ))
+  [ "$title_top" -lt 3 ] && title_top=3
+
+  # "Welcome to GitHub" header — appears first
+  local header="Welcome to GitHub"
+  local header_start=$(( art_start + 1 ))
+  printf '\033[%d;%dH%s%s%s%s' $(( title_top - 2 )) "$header_start" "${DIM}" "${WHITE}" "$header" "${RESET}"
+  sleep 0.3
+
+  # Reveal COPILOT columns left-to-right — brand cyan color
+  local lines_arr
+  lines_arr=("$L0" "$L1" "$L2" "$L3" "$L4" "$L5")
+
+  local col=0
+  while [ "$col" -lt "$art_width" ]; do
+    local tc="${COPILOT_TEAL}"
+
+    local lr=0
+    while [ "$lr" -lt 6 ]; do
+      local line="${lines_arr[$lr]}"
+      local char="${line:$col:1}"
+      if [ -n "$char" ] && [ "$char" != " " ]; then
+        printf '\033[%d;%dH%s%s%s%s' $(( title_top + lr )) $(( art_start + col )) "${BOLD}" "$tc" "$char" "${RESET}"
+      fi
+      lr=$(( lr + 1 ))
+    done
+
+    # Sparkle trail
+    if [ $(( col % 2 )) -eq 0 ]; then
+      local spark_r=$(( title_top + (col % 6) ))
+      printf '\033[%d;%dH%s✦%s' "$spark_r" $(( art_start + col + 1 )) "${COPILOT_GOLD}" "${RESET}"
+      [ "$col" -gt 2 ] && printf '\033[%d;%dH ' "$spark_r" $(( art_start + col - 1 ))
+    fi
+
+    if [ "$col" -lt 8 ] || [ "$col" -gt $(( art_width - 8 )) ]; then
+      sleep 0.01
+    else
+      sleep 0.02
+    fi
+    col=$(( col + 1 ))
+  done
+
+  # Clean up trailing sparkles
+  local lr=0
+  while [ "$lr" -lt 6 ]; do
+    printf '\033[%d;%dH ' $(( title_top + lr )) $(( art_start + art_width + 1 ))
+    lr=$(( lr + 1 ))
+  done
+  sleep 0.2
+
+  # Mona mascot "boots up" row by row (if terminal is wide enough)
+  if [ "$show_mona" = "true" ]; then
+    local mona_start=$(( art_start + art_width + mona_gap ))
+    local mona_top=$(( title_top - 1 ))
+    local mona_arr
+    mona_arr=("$M0" "$M1" "$M2" "$M3" "$M4" "$M5" "$M6" "$M7")
+
+    local mr=0
+    while [ "$mr" -lt 8 ]; do
+      local mline="${mona_arr[$mr]}"
+      local mc=0
+      local mlen=${#mline}
+      while [ "$mc" -lt "$mlen" ]; do
+        local mch="${mline:$mc:1}"
+        if [ "$mch" != " " ]; then
+          # Color the Mona parts
+          local mcolor="${WHITE}"
+          case "$mch" in
+            ▄|▀|█)
+              # Antennas and visor = cyan, side ears = pink
+              if [ "$mr" -le 1 ]; then
+                mcolor="${COPILOT_TEAL}"
+              elif [ "$mr" -eq 3 ] || [ "$mr" -eq 4 ]; then
+                if [ "$mc" -lt 4 ] || [ "$mc" -gt 16 ]; then
+                  mcolor="${COPILOT_PINK}"
+                else
+                  mcolor="${COPILOT_TEAL}"
+                fi
+              elif [ "$mr" -eq 5 ] || [ "$mr" -eq 6 ]; then
+                if [ "$mc" -lt 4 ] || [ "$mc" -gt 16 ]; then
+                  mcolor="${COPILOT_PINK}"
+                else
+                  mcolor="${COPILOT_GREEN}"
+                fi
+              fi
+              ;;
+            ▐|▌)
+              if [ "$mr" -ge 3 ] && [ "$mr" -le 6 ]; then
+                if [ "$mc" -lt 4 ] || [ "$mc" -gt 16 ]; then
+                  mcolor="${COPILOT_PINK}"
+                else
+                  mcolor="${COPILOT_GREEN}"
+                fi
+              fi
+              ;;
+            ┌|┐|└|┘|│|─|╶|╴)
+              mcolor="${DIM}${WHITE}"
+              ;;
+          esac
+          printf '\033[%d;%dH%s%s%s' $(( mona_top + mr )) $(( mona_start + mc )) "$mcolor" "$mch" "${RESET}"
+        fi
+        mc=$(( mc + 1 ))
+      done
+      sleep 0.08
+      mr=$(( mr + 1 ))
+    done
+  fi
+  sleep 0.3
+
+  # "GitHub Copilot CLI" subtitle
+  local sub="GitHub Copilot CLI"
+  local sub_start=$(( art_start + (art_width / 2) - (${#sub} / 2) ))
+  [ "$sub_start" -lt 2 ] && sub_start=2
+  local sub_row=$(( title_top + 7 ))
+
+  local si=0
+  local slen=${#sub}
+  while [ "$si" -lt "$slen" ]; do
+    local sch="${sub:$si:1}"
+    printf '\033[%d;%dH%s%s%s' "$sub_row" $(( sub_start + si )) "${COPILOT_MUTED}" "$sch" "${RESET}"
+    si=$(( si + 1 ))
+  done
+  sleep 0.5
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # ACT 4: FLOATING SPARKLE FIELD — ambient particles drift upward
+  # Like the lantern scene in Tangled — magical, alive
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  local drift_syms="✦ ✧ ⋆ · ˚ ° ✦ ✧"
+  local d_arr
+  d_arr=($drift_syms)
+  local drift_colors
+  drift_colors=("${COPILOT_GOLD}" "${COPILOT_LAVENDER}" "${COPILOT_TEAL}" "${COPILOT_PINK}" "${COPILOT_BLUE}" "${COPILOT_PURPLE}" "${COPILOT_ORANGE}" "${COPILOT_CYAN_BRIGHT}")
+
+  # Spawn 3 waves of rising particles (avoiding the title area)
+  local dwave
+  for dwave in 1 2 3; do
+    local di=0
+    while [ "$di" -lt 10 ]; do
+      # Random-ish positions using arithmetic on di and dwave
+      local dx=$(( (di * 7 + dwave * 13) % cw + 1 ))
+      local dy=$(( ch - di * 2 + dwave ))
+      [ "$dy" -lt 1 ] && dy=1
+      [ "$dy" -gt "$ch" ] && dy="$ch"
+      [ "$dx" -gt "$cw" ] && dx="$cw"
+      local dc="${drift_colors[$(( (di + dwave) % 8 ))]}"
+      local ds="${d_arr[$(( di % 8 ))]}"
+      printf '\033[%d;%dH%s%s%s' "$dy" "$dx" "$dc" "$ds" "${RESET}"
+      di=$(( di + 1 ))
+    done
+    sleep 0.1
+
+    # Float them up one row (erase old, draw new)
+    di=0
+    while [ "$di" -lt 10 ]; do
+      local dx=$(( (di * 7 + dwave * 13) % cw + 1 ))
+      local dy=$(( ch - di * 2 + dwave ))
+      [ "$dy" -lt 1 ] && { di=$(( di + 1 )); continue; }
+      [ "$dy" -gt "$ch" ] && { di=$(( di + 1 )); continue; }
+      [ "$dx" -gt "$cw" ] && { di=$(( di + 1 )); continue; }
+      printf '\033[%d;%dH ' "$dy" "$dx"
+      local ny=$(( dy - 1 ))
+      [ "$ny" -ge 1 ] && {
+        local dc="${drift_colors[$(( (di + dwave) % 8 ))]}"
+        local ds="${d_arr[$(( di % 8 ))]}"
+        printf '\033[%d;%dH%s%s%s' "$ny" "$dx" "$dc" "$ds" "${RESET}"
+      }
+      di=$(( di + 1 ))
+    done
+    sleep 0.08
+  done
+  sleep 0.2
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # ACT 5: PROGRESS BAR — cinematic loading with personality
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  local bar_row=$(( title_top + 11 ))
+  local bar_width=40
+  local bar_start=$(( center_x - bar_width / 2 ))
+  [ "$bar_start" -lt 2 ] && bar_start=2
+  local label_arr
+  label_arr=("Gathering stardust" "Warming up the AI" "Charging creative cores" "Almost there" "Preparing your experience")
+
+  local i=0
+  while [ $i -le $bar_width ]; do
+    # Switch label at intervals
+    local label_idx=0
+    [ "$i" -ge $(( bar_width / 5 )) ] && label_idx=1
+    [ "$i" -ge $(( bar_width * 2 / 5 )) ] && label_idx=2
+    [ "$i" -ge $(( bar_width * 3 / 5 )) ] && label_idx=3
+    [ "$i" -ge $(( bar_width * 4 / 5 )) ] && label_idx=4
+    local current_label="${label_arr[$label_idx]}"
+
+    # Draw bar with gradient fill
+    printf '\033[%d;%dH%s[%s' "$bar_row" $(( bar_start - 1 )) "${COPILOT_BLUE}" "${RESET}"
+    local j=0
+    while [ $j -lt $bar_width ]; do
+      if [ $j -lt $i ]; then
+        local fill_color
+        local fp=$(( j * 100 / bar_width ))
+        if [ "$fp" -lt 20 ]; then
+          fill_color="${COPILOT_BLUE}"
+        elif [ "$fp" -lt 40 ]; then
+          fill_color="${COPILOT_PURPLE}"
+        elif [ "$fp" -lt 60 ]; then
+          fill_color="${COPILOT_TEAL}"
+        elif [ "$fp" -lt 80 ]; then
+          fill_color="${COPILOT_GREEN}"
+        else
+          fill_color="${COPILOT_GOLD}"
+        fi
+        printf '%s█%s' "$fill_color" "${RESET}"
+      else
+        printf '%s░%s' "${COPILOT_MUTED}" "${RESET}"
+      fi
+      j=$(( j + 1 ))
+    done
+    local pct=$(( i * 100 / bar_width ))
+    printf '%s]%s %s%3d%%%s' "${COPILOT_BLUE}" "${RESET}" "${COPILOT_LAVENDER}" "$pct" "${RESET}"
+
+    # Label below bar
+    printf '\033[%d;%dH%s%-35s%s' $(( bar_row + 1 )) "$bar_start" "${COPILOT_MUTED}" "$current_label" "${RESET}"
+
+    # Sparkle next to the fill edge
+    if [ "$i" -gt 0 ] && [ "$i" -lt "$bar_width" ]; then
+      local spark_sym="✦"
+      [ $(( i % 3 )) -eq 0 ] && spark_sym="✧"
+      [ $(( i % 5 )) -eq 0 ] && spark_sym="⋆"
+      printf '\033[%d;%dH%s%s%s' $(( bar_row - 1 )) $(( bar_start + i )) "${COPILOT_GOLD}" "$spark_sym" "${RESET}"
+      # Erase previous sparkle
+      [ "$i" -gt 1 ] && printf '\033[%d;%dH ' $(( bar_row - 1 )) $(( bar_start + i - 1 ))
+    fi
+
+    sleep 0.03
+    i=$(( i + 1 ))
+  done
+  # Clean up last sparkle
+  printf '\033[%d;%dH ' $(( bar_row - 1 )) $(( bar_start + bar_width ))
+  sleep 0.3
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # ACT 6: THE BIG REVEAL — full screen transformation
+  # Screen wipe, then the welcome message with animated steps
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  # Screen wipe: horizontal gold line sweeps across
+  local wipe_row=$(( center_y ))
+  local wc=1
+  while [ "$wc" -le "$cw" ]; do
+    printf '\033[%d;%dH%s━%s' "$wipe_row" "$wc" "${COPILOT_GOLD}" "${RESET}"
+    [ "$wc" -gt 1 ] && printf '\033[%d;%dH%s─%s' "$wipe_row" $(( wc - 1 )) "${COPILOT_MUTED}" "${RESET}"
+    if [ $(( wc % 3 )) -eq 0 ]; then
+      sleep 0.005
+    fi
+    wc=$(( wc + 1 ))
+  done
+  sleep 0.1
+
+  # Wipe expands up and down simultaneously, clearing the screen
+  local expand=1
+  while [ "$expand" -lt $(( ch / 2 + 2 )) ]; do
+    local up_row=$(( wipe_row - expand ))
+    local dn_row=$(( wipe_row + expand ))
+    [ "$up_row" -ge 1 ] && printf '\033[%d;1H\033[2K' "$up_row"
+    [ "$dn_row" -le "$ch" ] && printf '\033[%d;1H\033[2K' "$dn_row"
+    if [ $(( expand % 2 )) -eq 0 ]; then
+      sleep 0.01
+    fi
+    expand=$(( expand + 1 ))
+  done
+  # Clear the wipe line itself
+  printf '\033[%d;1H\033[2K' "$wipe_row"
+  sleep 0.2
+
+  # ── THE WELCOME SCREEN ──
+
+  # Top sparkle border (full width)
+  local accent_line=""
+  i=0
+  local aw=$(( cw - 4 ))
+  [ "$aw" -gt 76 ] && aw=76
+  while [ $i -lt "$aw" ]; do
+    case $(( i % 8 )) in
+      0) accent_line="${accent_line}✦" ;;
+      1|7) accent_line="${accent_line} " ;;
+      2) accent_line="${accent_line}·" ;;
+      3) accent_line="${accent_line}✧" ;;
+      4) accent_line="${accent_line}·" ;;
+      5) accent_line="${accent_line}⋆" ;;
+      6) accent_line="${accent_line}˚" ;;
+    esac
+    i=$(( i + 1 ))
+  done
+
+  local reveal_row=3
+  printf '\033[%d;3H' "$reveal_row"
+  # Sparkle border types in
+  local al_len=${#accent_line}
+  i=0
+  while [ $i -lt $al_len ]; do
+    printf '%s%s%s' "${COPILOT_PURPLE}" "${accent_line:$i:1}" "${RESET}"
+    i=$(( i + 1 ))
+  done
+  printf '\n'
+  sleep 0.15
+
+  # WELCOME text — big and bold
+  reveal_row=$(( reveal_row + 2 ))
+  printf '\033[%d;3H' "$reveal_row"
+  printf '  %s%s' "${BOLD}" "${COPILOT_BLUE}"
+  type_text "  Welcome to the terminal." 0.05
+  printf '%s' "${RESET}"
+  sleep 0.3
+
+  reveal_row=$(( reveal_row + 2 ))
+  printf '\033[%d;3H' "$reveal_row"
+  printf '  %s' "${WHITE}"
+  type_text "  This is where you build your first AI agent with GitHub Copilot CLI." 0.025
+  printf '%s' "${RESET}"
+  sleep 0.2
+
+  reveal_row=$(( reveal_row + 1 ))
+  printf '\033[%d;3H' "$reveal_row"
+  printf '  %s' "${WHITE}"
+  type_text "  Tell it what to do. Shape how it thinks." 0.025
+  printf '%s' "${RESET}"
+  sleep 0.2
+
+  reveal_row=$(( reveal_row + 1 ))
+  printf '\033[%d;3H' "$reveal_row"
+  printf '  %s%s' "${BOLD}" "${COPILOT_PURPLE}"
+  type_text "  You're about to build with the GitHub Copilot CLI." 0.04
+  printf '%s' "${RESET}"
+  sleep 0.4
+
+  # The 4 steps — each one animates in with its emoji and a sparkle burst
+  reveal_row=$(( reveal_row + 2 ))
+  local s_arr
+  s_arr=("🧠  Think it" "🔧  Shape it" "🤖  Build it" "🚀  Launch it")
+  local s_colors
+  s_colors=("${COPILOT_BLUE}" "${COPILOT_PURPLE}" "${COPILOT_TEAL}" "${COPILOT_GREEN}")
+  local s_sparks
+  s_sparks=("✦" "✧" "⋆" "✦")
+
+  local si=0
+  for step in "${s_arr[@]}"; do
+    printf '\033[%d;5H' "$reveal_row"
+    # Step fades in
+    printf '%s  %s%s' "${s_colors[$si]}" "$step" "${RESET}"
+    sleep 0.15
+    # Checkmark pops in with a sparkle
+    printf '  %s%s%s' "${COPILOT_GOLD}" "${s_sparks[$si]}" "${RESET}"
+    sleep 0.08
+    # Replace sparkle with green check
+    printf '\b\b%s✓ %s' "${COPILOT_GREEN}" "${RESET}"
+    printf '\n'
+    reveal_row=$(( reveal_row + 1 ))
+    si=$(( si + 1 ))
+    sleep 0.2
+  done
+
+  # Bottom sparkle border
+  reveal_row=$(( reveal_row + 1 ))
+  printf '\033[%d;3H' "$reveal_row"
+  printf '  %s%s%s' "${COPILOT_PURPLE}" "$accent_line" "${RESET}"
+  printf '\n'
+  sleep 0.4
+
+  # Final ambient sparkles — scattered twinkles across the screen
+  local twinkle
+  for twinkle in 1 2 3 4 5; do
+    local tx=$(( (twinkle * 17 + 3) % (cw - 2) + 1 ))
+    local ty=$(( (twinkle * 5 + 1) % (ch - 2) + 1 ))
+    # Don't overwrite the content area
+    if [ "$ty" -lt 3 ] || [ "$ty" -gt $(( reveal_row + 1 )) ]; then
+      local tc
+      case $(( twinkle % 4 )) in
+        0) tc="${COPILOT_GOLD}" ;;
+        1) tc="${COPILOT_LAVENDER}" ;;
+        2) tc="${COPILOT_TEAL}" ;;
+        3) tc="${COPILOT_PINK}" ;;
+      esac
+      printf '\033[%d;%dH%s✦%s' "$ty" "$tx" "$tc" "${RESET}"
+      sleep 0.1
+    fi
+  done
+  sleep 0.5
+
+  # Position cursor below content for next phase
+  printf '\033[%d;1H' $(( reveal_row + 3 ))
+  printf '\033[?25h'  # restore cursor
+}
+
+
+# ---------------------------------------------------------------------------
 # Phase 1 — Welcome
 # ---------------------------------------------------------------------------
 
 welcome_phase() {
-  clear
-  sleep 0.5
+  # Run the cinematic intro FIRST
+  intro_cinematic
 
-  box <<'WELCOME'
-                                           
-  ✨ Hey there.                            
-                                           
-  You're about to build your first         
-  AI agent with GitHub Copilot CLI.        
-  It takes about five minutes.             
-  No coding required.                      
-                                           
-WELCOME
-
-  sleep 1.5
-
+  # THEN ask for the user's name
   printf "  What's your first name?\n\n"
   printf "  ${GREEN}>${RESET} "
   read -r USER_NAME
