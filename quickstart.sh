@@ -868,6 +868,12 @@ intro_cinematic() {
   printf '\n'
   sleep 0.4
 
+  # AI-native tagline
+  reveal_row=$(( reveal_row + 2 ))
+  printf '\033[%d;3H' "$reveal_row"
+  printf '  %s✨ Become AI native and accelerate your work with the GitHub Copilot CLI. ✨%s\n' "${COPILOT_GOLD}" "${RESET}"
+  sleep 0.6
+
   # Final ambient sparkles — scattered twinkles across the screen
   local twinkle
   for twinkle in 1 2 3 4 5; do
