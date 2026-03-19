@@ -1598,19 +1598,29 @@ handoff_phase() {
   echo ""
   printf "  ${GREEN}${BOLD}${CHECK} Setup complete!${RESET}\n"
   echo ""
+  sleep 1
   printf "  ${BOLD}Your agent:${RESET} ${CYAN}${AGENT_NAME}${RESET}\n"
+  sleep 0.5
   printf "  ${BOLD}Your folder:${RESET} ${CYAN}~/my-first-agent/${RESET}\n"
-  printf "  ${BOLD}Your state:${RESET}  ${CYAN}~/.first-light-state${RESET}\n"
   echo ""
+  sleep 1.5
   separator
   echo ""
 
   # Attempt to launch Copilot CLI directly
   if gh copilot --version &>/dev/null 2>&1; then
-    printf "  ${BOLD}Launching the Copilot CLI...${RESET}\n"
-    printf "  ${DIM}Type ${RESET}${GREEN}first light${RESET}${DIM} to continue your journey.${RESET}\n"
+    type_text "I'm about to open the Copilot CLI for you." 0.03
+    echo ""
+    sleep 0.8
+    type_text "When you see the prompt, just type: ${GREEN}${BOLD}first light${RESET}" 0.03
+    echo ""
+    sleep 0.8
+    type_text "${AGENT_NAME} will be there, ready to go." 0.03
+    echo ""
     echo ""
     sleep 1.5
+    pause_gentle "Press Enter to launch the Copilot CLI..."
+    echo ""
     exec gh copilot
   else
     # Graceful fallback with manual instructions
