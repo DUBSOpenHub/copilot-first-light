@@ -113,20 +113,6 @@ command_exists() {
   command -v "$1" >/dev/null 2>&1
 }
 
-run_as_root() {
-  if [ "$(id -u)" -eq 0 ]; then
-    "$@"
-    return $?
-  fi
-
-  if command_exists sudo; then
-    sudo "$@"
-    return $?
-  fi
-
-  return 1
-}
-
 ensure_brew_in_path() {
   if command_exists brew; then
     return 0
@@ -143,7 +129,7 @@ ensure_brew_in_path() {
 
 install_homebrew() {
   ensure_brew_in_path && return 0
-  NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" </dev/null
 }
 
 detect_os() {
@@ -169,21 +155,28 @@ install_gh_cli() {
     macOS)
       ensure_brew_in_path || install_homebrew || return 1
       ensure_brew_in_path || return 1
-      brew install gh
+      brew install gh </dev/null
       ;;
     Linux)
+      # Use the official gh install script — no sudo prompts
+      curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg 2>/dev/null | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg 2>/dev/null
       if command_exists apt-get; then
-        run_as_root apt-get update -y && run_as_root apt-get install -y gh
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" > /etc/apt/sources.list.d/github-cli.list 2>/dev/null
+        apt-get update -y </dev/null 2>/dev/null && apt-get install -y gh </dev/null 2>/dev/null
       elif command_exists dnf; then
-        run_as_root dnf install -y gh
-      else
-        return 1
+        dnf install -y gh </dev/null 2>/dev/null
+      fi
+      # Fallback: try the official install script
+      if ! command_exists gh; then
+        curl -fsSL https://cli.github.com/packages/install.sh 2>/dev/null | bash 2>/dev/null
       fi
       ;;
     *)
       return 1
       ;;
   esac
+
+  command_exists gh
 }
 
 install_gh_copilot() {
