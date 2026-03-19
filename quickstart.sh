@@ -851,9 +851,29 @@ intro_cinematic() {
   sleep 0.2
 
   # ── THE WELCOME SCREEN ──
-  # Drawn via _draw_welcome_screen so SIGWINCH can redraw on resize
+  # Calculate layout; SIGWINCH handler redraws the static version on resize
 
-  _draw_welcome_screen
+  # Build sparkle border and calculate starting row
+  _WS_ACCENT=""
+  local aw=$(( cw - 4 ))
+  [ "$aw" -gt 76 ] && aw=76
+  local j=0
+  while [ $j -lt "$aw" ]; do
+    case $(( j % 8 )) in
+      0) _WS_ACCENT="${_WS_ACCENT}✦" ;;
+      1|7) _WS_ACCENT="${_WS_ACCENT} " ;;
+      2) _WS_ACCENT="${_WS_ACCENT}·" ;;
+      3) _WS_ACCENT="${_WS_ACCENT}✧" ;;
+      4) _WS_ACCENT="${_WS_ACCENT}·" ;;
+      5) _WS_ACCENT="${_WS_ACCENT}⋆" ;;
+      6) _WS_ACCENT="${_WS_ACCENT}˚" ;;
+    esac
+    j=$(( j + 1 ))
+  done
+
+  local content_height=16
+  _WS_ROW=$(( (ch - content_height) / 2 ))
+  [ "$_WS_ROW" -lt 2 ] && _WS_ROW=2
 
   # Set up resize handler — redraws instantly on terminal resize
   trap '_draw_welcome_screen' WINCH
