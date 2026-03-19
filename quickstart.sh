@@ -21,17 +21,17 @@ fi
 # ---------------------------------------------------------------------------
 # ANSI Colors & Symbols
 # ---------------------------------------------------------------------------
-BOLD="\033[1m"
-DIM="\033[2m"
-ITALIC="\033[3m"
-RESET="\033[0m"
-CYAN="\033[36m"
-GREEN="\033[32m"
-YELLOW="\033[33m"
-MAGENTA="\033[35m"
-BLUE="\033[34m"
-WHITE="\033[97m"
-RED="\033[31m"
+BOLD=$'\033[1m'
+DIM=$'\033[2m'
+ITALIC=$'\033[3m'
+RESET=$'\033[0m'
+CYAN=$'\033[36m'
+GREEN=$'\033[32m'
+YELLOW=$'\033[33m'
+MAGENTA=$'\033[35m'
+BLUE=$'\033[34m'
+WHITE=$'\033[97m'
+RED=$'\033[31m'
 
 # GitHub Copilot brand palette (256-color) — for cinematic intro
 COPILOT_BLUE=$'\033[38;5;75m'       # #6CB6FF — Copilot sky blue
@@ -314,7 +314,7 @@ intro_cinematic() {
 
   # A single tiny star blinks on, center screen
   printf '\033[%d;%dH%s✦%s' "$center_y" "$center_x" "${COPILOT_GOLD}" "${RESET}"
-  sleep 0.3
+  sleep 0.6
   # It pulses: dim → bright → dim
   printf '\033[%d;%dH%s✦%s' "$center_y" "$center_x" "${COPILOT_MUTED}" "${RESET}"
   sleep 0.15
@@ -352,7 +352,7 @@ intro_cinematic() {
       printf '\033[%d;%dH%s%s%s' "$sr" "$sc" "$scolor" "${s_arr[$(( si % 8 ))]}" "${RESET}"
       si=$(( si + 1 ))
     done
-    sleep 0.12
+    sleep 0.25
   done
   sleep 0.3
 
@@ -361,7 +361,7 @@ intro_cinematic() {
   for flash_row in $(( center_y - 1 )) "$center_y" $(( center_y + 1 )); do
     printf '\033[%d;%dH%s  ·  ✦  ⋆  ✧  ·  %s' "$flash_row" $(( center_x - 10 )) "${COPILOT_WHITE_BRIGHT}" "${RESET}"
   done
-  sleep 0.08
+  sleep 0.15
   clear
   sleep 0.15
 
@@ -408,7 +408,7 @@ intro_cinematic() {
       local es="${e_arr[$(( (angle + wave) % 16 ))]}"
       printf '\033[%d;%dH%s%s%s' "$pr" "$pc" "$ec" "$es" "${RESET}"
     done
-    sleep 0.06
+    sleep 0.12
   done
   sleep 0.15
 
@@ -514,9 +514,9 @@ intro_cinematic() {
     fi
 
     if [ "$col" -lt 8 ] || [ "$col" -gt $(( art_width - 8 )) ]; then
-      sleep 0.01
-    else
       sleep 0.02
+    else
+      sleep 0.035
     fi
     col=$(( col + 1 ))
   done
@@ -582,7 +582,7 @@ intro_cinematic() {
         fi
         mc=$(( mc + 1 ))
       done
-      sleep 0.08
+      sleep 0.15
       mr=$(( mr + 1 ))
     done
   fi
@@ -649,7 +649,7 @@ intro_cinematic() {
       }
       di=$(( di + 1 ))
     done
-    sleep 0.08
+    sleep 0.15
   done
   sleep 0.2
 
@@ -733,7 +733,7 @@ intro_cinematic() {
     printf '\033[%d;%dH%s━%s' "$wipe_row" "$wc" "${COPILOT_GOLD}" "${RESET}"
     [ "$wc" -gt 1 ] && printf '\033[%d;%dH%s─%s' "$wipe_row" $(( wc - 1 )) "${COPILOT_MUTED}" "${RESET}"
     if [ $(( wc % 3 )) -eq 0 ]; then
-      sleep 0.005
+      sleep 0.01
     fi
     wc=$(( wc + 1 ))
   done
@@ -747,7 +747,7 @@ intro_cinematic() {
     [ "$up_row" -ge 1 ] && printf '\033[%d;1H\033[2K' "$up_row"
     [ "$dn_row" -le "$ch" ] && printf '\033[%d;1H\033[2K' "$dn_row"
     if [ $(( expand % 2 )) -eq 0 ]; then
-      sleep 0.01
+      sleep 0.02
     fi
     expand=$(( expand + 1 ))
   done
@@ -833,7 +833,7 @@ intro_cinematic() {
     sleep 0.15
     # Checkmark pops in with a sparkle
     printf '  %s%s%s' "${COPILOT_GOLD}" "${s_sparks[$si]}" "${RESET}"
-    sleep 0.08
+    sleep 0.15
     # Replace sparkle with green check
     printf '\b\b%s✓ %s' "${COPILOT_GREEN}" "${RESET}"
     printf '\n'
