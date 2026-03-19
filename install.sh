@@ -25,14 +25,14 @@ cleanup() {
 trap cleanup EXIT INT TERM
 
 if [ -t 1 ]; then
-  RESET='\033[0m'
-  BOLD='\033[1m'
-  DIM='\033[2m'
-  CYAN='\033[36m'
-  MAGENTA='\033[35m'
-  GREEN='\033[32m'
-  YELLOW='\033[33m'
-  RED='\033[31m'
+  RESET=$'\033[0m'
+  BOLD=$'\033[1m'
+  DIM=$'\033[2m'
+  CYAN=$'\033[36m'
+  MAGENTA=$'\033[35m'
+  GREEN=$'\033[32m'
+  YELLOW=$'\033[33m'
+  RED=$'\033[31m'
 else
   RESET=''
   BOLD=''
@@ -196,14 +196,11 @@ download_animated() {
 }
 
 launch_animated() {
-  (
-    export COPILOT_FIRST_LIGHT_BOOTSTRAP=1
-    export COPILOT_FIRST_LIGHT_SKILL_DIR="$SKILL_DIR"
-    if [ -n "$TTY_DEV" ]; then
-      exec <"$TTY_DEV"
-    fi
-    . "$ANIMATED_FILE"
-  ) 2>>"$LOG_FILE"
+  if [ -n "$TTY_DEV" ]; then
+    bash "$ANIMATED_FILE" <"$TTY_DEV"
+  else
+    bash "$ANIMATED_FILE"
+  fi
 }
 
 handoff_to_gh() {
