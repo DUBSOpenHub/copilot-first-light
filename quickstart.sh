@@ -547,8 +547,10 @@ STATE_EOF
   type_text "You didn't install an app. You ${BOLD}built${RESET} something." 0.03
   sleep 0.6
   type_text "A prompt file, a config, a structure — the same pieces a developer would create." 0.03
+  sleep 0.8
+  type_text "All powered by the ${CYAN}GitHub Copilot CLI${RESET}." 0.03
   sleep 1.4
-  type_text "${DIM}You just didn't need to be one to do it.${RESET}" 0.03
+  type_text "${DIM}You just didn't need to be a developer to do it.${RESET}" 0.03
   sleep 1.0
   echo ""
 
@@ -600,6 +602,8 @@ show_creation_phase() {
   type_text "That feeling right now — that little ${CYAN}wait, really?${RESET} — remember it." 0.03
   sleep 0.8
   type_text "That's what building feels like." 0.03
+  sleep 0.8
+  type_text "And this is just the beginning of what ${CYAN}Copilot CLI${RESET} can do." 0.03
   sleep 1.2
   echo ""
 
@@ -883,14 +887,12 @@ handoff_phase() {
   echo ""
   type_text "${AGENT_NAME} is your first build. It doesn't have to be your last." 0.03
   sleep 0.8
-  type_text "Next time you open this window, try typing what you want to happen." 0.03
+  type_text "${CYAN}Copilot CLI${RESET} is how you build the next one." 0.03
   sleep 0.5
-  type_text "You might be surprised what listens." 0.03
+  type_text "Just open this terminal and start talking." 0.03
   sleep 1.6
   echo ""
-  type_text "${DIM}This terminal will be here whenever you're ready to come back.${RESET}" 0.03
-  sleep 0.6
-  type_text "Go build things." 0.04
+  type_text "${DIM}Go build things.${RESET}" 0.04
   sleep 1.0
   echo ""
   echo ""
