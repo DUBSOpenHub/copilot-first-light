@@ -1597,6 +1597,10 @@ handoff_phase() {
     echo ""
     echo ""
     sleep 1.5
+    echo ""
+    printf "  ${COPILOT_GOLD}✨ Become AI native and accelerate your work by using the GitHub Copilot CLI. ✨${RESET}\n"
+    echo ""
+    sleep 2.0
     pause_gentle "Press Enter to launch the Copilot CLI..."
     echo ""
     exec gh copilot
@@ -1611,6 +1615,8 @@ handoff_phase() {
     printf "  ${CYAN}  gh copilot${RESET}              ${DIM}← start Copilot CLI${RESET}\n"
     echo ""
     printf "  Then type ${GREEN}${BOLD}first light${RESET} to pick up where you left off.\n"
+    echo ""
+    printf "  ${COPILOT_GOLD}✨ Become AI native and accelerate your work by using the GitHub Copilot CLI. ✨${RESET}\n"
     echo ""
     printf "  ${DIM}Everything you built is saved. Come back anytime.${RESET}\n"
     echo ""
