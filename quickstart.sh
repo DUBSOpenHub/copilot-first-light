@@ -311,6 +311,82 @@ install_phase() {
 }
 
 # ---------------------------------------------------------------------------
+# Static welcome screen — used for instant redraw on terminal resize
+# Uses global vars: _WS_ACCENT, _WS_ROW (set by _draw_welcome_screen)
+# ---------------------------------------------------------------------------
+
+_WS_ACCENT=""
+_WS_ROW=2
+
+_draw_welcome_screen() {
+  local cw ch
+  cw="$(raw_term_width)"
+  ch="$(raw_term_height)"
+
+  # Build sparkle border
+  _WS_ACCENT=""
+  local aw=$(( cw - 4 ))
+  [ "$aw" -gt 76 ] && aw=76
+  local j=0
+  while [ $j -lt "$aw" ]; do
+    case $(( j % 8 )) in
+      0) _WS_ACCENT="${_WS_ACCENT}✦" ;;
+      1|7) _WS_ACCENT="${_WS_ACCENT} " ;;
+      2) _WS_ACCENT="${_WS_ACCENT}·" ;;
+      3) _WS_ACCENT="${_WS_ACCENT}✧" ;;
+      4) _WS_ACCENT="${_WS_ACCENT}·" ;;
+      5) _WS_ACCENT="${_WS_ACCENT}⋆" ;;
+      6) _WS_ACCENT="${_WS_ACCENT}˚" ;;
+    esac
+    j=$(( j + 1 ))
+  done
+
+  # Vertically center (16 rows of content)
+  local content_height=16
+  _WS_ROW=$(( (ch - content_height) / 2 ))
+  [ "$_WS_ROW" -lt 2 ] && _WS_ROW=2
+  local r=$_WS_ROW
+
+  clear
+  printf '\033[?25l'
+
+  # Top sparkle border
+  printf '\033[%d;3H  %s%s%s' "$r" "${COPILOT_PURPLE}" "$_WS_ACCENT" "${RESET}"
+
+  # Welcome text
+  r=$(( r + 2 ))
+  printf '\033[%d;3H  %s%sWelcome to the terminal.%s' "$r" "${BOLD}" "${COPILOT_BLUE}" "${RESET}"
+  r=$(( r + 2 ))
+  printf '\033[%d;3H  %sThis is where you build your first AI agent with the GitHub Copilot CLI.%s' "$r" "${WHITE}" "${RESET}"
+  r=$(( r + 1 ))
+  printf '\033[%d;3H  %sTell it what to do. Shape how it thinks.%s' "$r" "${WHITE}" "${RESET}"
+  r=$(( r + 1 ))
+  printf '\033[%d;3H  %s%sYou'\''re about to build with the GitHub Copilot CLI.%s' "$r" "${BOLD}" "${COPILOT_PURPLE}" "${RESET}"
+
+  # 4 steps
+  r=$(( r + 2 ))
+  local steps=("🧠  Think it" "🔧  Shape it" "🤖  Build it" "🚀  Launch it")
+  local colors=("${COPILOT_BLUE}" "${COPILOT_PURPLE}" "${COPILOT_TEAL}" "${COPILOT_GREEN}")
+  local si=0
+  for step in "${steps[@]}"; do
+    printf '\033[%d;5H  %s%s%s  %s✓ %s' "$r" "${colors[$si]}" "$step" "${RESET}" "${COPILOT_GREEN}" "${RESET}"
+    r=$(( r + 1 ))
+    si=$(( si + 1 ))
+  done
+
+  # Bottom sparkle border
+  r=$(( r + 1 ))
+  printf '\033[%d;3H  %s%s%s' "$r" "${COPILOT_PURPLE}" "$_WS_ACCENT" "${RESET}"
+
+  # AI-native tagline
+  r=$(( r + 2 ))
+  printf '\033[%d;3H  %s✨ Become AI native and accelerate your work with the GitHub Copilot CLI. ✨%s' "$r" "${COPILOT_GOLD}" "${RESET}"
+
+  # Position cursor below
+  printf '\033[%d;1H' $(( r + 3 ))
+}
+
+# ---------------------------------------------------------------------------
 # Cinematic Intro — Pixar-level animated welcome sequence
 # ---------------------------------------------------------------------------
 
@@ -775,35 +851,21 @@ intro_cinematic() {
   sleep 0.2
 
   # ── THE WELCOME SCREEN ──
+  # Drawn via _draw_welcome_screen so SIGWINCH can redraw on resize
 
-  # Top sparkle border (full width)
-  local accent_line=""
-  i=0
-  local aw=$(( cw - 4 ))
-  [ "$aw" -gt 76 ] && aw=76
-  while [ $i -lt "$aw" ]; do
-    case $(( i % 8 )) in
-      0) accent_line="${accent_line}✦" ;;
-      1|7) accent_line="${accent_line} " ;;
-      2) accent_line="${accent_line}·" ;;
-      3) accent_line="${accent_line}✧" ;;
-      4) accent_line="${accent_line}·" ;;
-      5) accent_line="${accent_line}⋆" ;;
-      6) accent_line="${accent_line}˚" ;;
-    esac
-    i=$(( i + 1 ))
-  done
+  _draw_welcome_screen
 
-  # Vertically center the welcome content (16 rows tall)
-  local content_height=16
-  local reveal_row=$(( (ch - content_height) / 2 ))
-  [ "$reveal_row" -lt 2 ] && reveal_row=2
+  # Set up resize handler — redraws instantly on terminal resize
+  trap '_draw_welcome_screen' WINCH
+
+  # Animated reveal: type out text with delays (first draw only)
+  reveal_row=$_WS_ROW
+
   printf '\033[%d;3H' "$reveal_row"
-  # Sparkle border types in
-  local al_len=${#accent_line}
+  local al_len=${#_WS_ACCENT}
   i=0
   while [ $i -lt $al_len ]; do
-    printf '%s%s%s' "${COPILOT_PURPLE}" "${accent_line:$i:1}" "${RESET}"
+    printf '%s%s%s' "${COPILOT_PURPLE}" "${_WS_ACCENT:$i:1}" "${RESET}"
     i=$(( i + 1 ))
   done
   printf '\n'
@@ -844,20 +906,13 @@ intro_cinematic() {
   s_arr=("🧠  Think it" "🔧  Shape it" "🤖  Build it" "🚀  Launch it")
   local s_colors
   s_colors=("${COPILOT_BLUE}" "${COPILOT_PURPLE}" "${COPILOT_TEAL}" "${COPILOT_GREEN}")
-  local s_sparks
-  s_sparks=("✦" "✧" "⋆" "✦")
 
   local si=0
   for step in "${s_arr[@]}"; do
     printf '\033[%d;5H' "$reveal_row"
-    # Step fades in
     printf '%s  %s%s' "${s_colors[$si]}" "$step" "${RESET}"
     sleep 0.15
-    # Checkmark pops in with a sparkle
-    printf '  %s%s%s' "${COPILOT_GOLD}" "${s_sparks[$si]}" "${RESET}"
-    sleep 0.15
-    # Replace sparkle with green check
-    printf '\b\b%s✓ %s' "${COPILOT_GREEN}" "${RESET}"
+    printf '  %s✓ %s' "${COPILOT_GREEN}" "${RESET}"
     printf '\n'
     reveal_row=$(( reveal_row + 1 ))
     si=$(( si + 1 ))
@@ -867,7 +922,7 @@ intro_cinematic() {
   # Bottom sparkle border
   reveal_row=$(( reveal_row + 1 ))
   printf '\033[%d;3H' "$reveal_row"
-  printf '  %s%s%s' "${COPILOT_PURPLE}" "$accent_line" "${RESET}"
+  printf '  %s%s%s' "${COPILOT_PURPLE}" "$_WS_ACCENT" "${RESET}"
   printf '\n'
   sleep 0.4
 
@@ -877,12 +932,11 @@ intro_cinematic() {
   printf '  %s✨ Become AI native and accelerate your work with the GitHub Copilot CLI. ✨%s\n' "${COPILOT_GOLD}" "${RESET}"
   sleep 0.6
 
-  # Final ambient sparkles — scattered twinkles across the screen
+  # Final ambient sparkles
   local twinkle
   for twinkle in 1 2 3 4 5; do
     local tx=$(( (twinkle * 17 + 3) % (cw - 2) + 1 ))
     local ty=$(( (twinkle * 5 + 1) % (ch - 2) + 1 ))
-    # Don't overwrite the content area
     if [ "$ty" -lt 3 ] || [ "$ty" -gt $(( reveal_row + 1 )) ]; then
       local tc
       case $(( twinkle % 4 )) in
@@ -897,7 +951,8 @@ intro_cinematic() {
   done
   sleep 0.5
 
-  # Position cursor below content for next phase
+  # Remove resize handler and position cursor below content
+  trap - WINCH
   printf '\033[%d;1H' $(( reveal_row + 3 ))
   printf '\033[?25h'  # restore cursor
 }
