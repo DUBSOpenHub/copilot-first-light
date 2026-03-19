@@ -2,12 +2,12 @@
 set -euo pipefail
 
 # ============================================================================
-# First Light — Your First AI Helper
+# First Light — Your First AI Agent
 # ============================================================================
 # Run with: curl -fsSL https://raw.githubusercontent.com/.../quickstart.sh | bash
 #
 # This script guides a complete beginner through building their first
-# AI helper — no coding experience needed. It installs what's needed,
+# AI agent — no coding experience needed. It installs what's needed,
 # asks a few questions, creates real files, and hands off to Copilot CLI.
 # ============================================================================
 
@@ -42,9 +42,9 @@ CHECK="✓"
 # State variables — filled in during the interactive flow
 # ---------------------------------------------------------------------------
 USER_NAME=""
-HELPER_TYPE=""
-HELPER_TYPE_INDEX=0
-HELPER_NAME=""
+AGENT_TYPE=""
+AGENT_TYPE_INDEX=0
+AGENT_NAME=""
 PERSONALITY=""
 PERSONALITY_INDEX=0
 AGENT_DIR="$HOME/my-first-agent"
@@ -270,31 +270,23 @@ install_phase() {
 
 welcome_phase() {
   clear
-  echo ""
-  echo ""
-
-  echo -e "${BOLD}${WHITE}  Hey there.${RESET}" | box
-
-  sleep 0.8
-  printf "  "
-  type_text "You're about to build your first AI helper." 0.04
-  echo ""
   sleep 0.5
-  printf "  "
-  type_text "It takes about five minutes. No coding needed." 0.03
-  echo ""
-  sleep 0.5
-  printf "  "
-  type_text "I'll walk you through every step." 0.03
-  echo ""
-  echo ""
-  separator
-  echo ""
-  sleep 0.3
 
-  printf "  ${BOLD}First — what's your name?${RESET}\n"
-  echo ""
-  printf "  ${CYAN}> ${RESET}"
+  box <<'WELCOME'
+                                           
+  ✨ Hey there.                            
+                                           
+  You're about to build your first         
+  AI agent with GitHub Copilot CLI.        
+  It takes about five minutes.             
+  No coding required.                      
+                                           
+WELCOME
+
+  sleep 1.5
+
+  printf "  What's your first name?\n\n"
+  printf "  ${GREEN}>${RESET} "
   read -r USER_NAME
 
   if [ -z "$USER_NAME" ]; then
@@ -311,14 +303,14 @@ welcome_phase() {
 }
 
 # ---------------------------------------------------------------------------
-# Phase 2 — Pick Your Helper
+# Phase 2 — Pick Your Agent
 # ---------------------------------------------------------------------------
 
-pick_helper_phase() {
+pick_agent_phase() {
   clear
   echo ""
   echo ""
-  printf "  ${BOLD}${WHITE}What should your helper do?${RESET}\n"
+  printf "  ${BOLD}${WHITE}What should your agent do?${RESET}\n"
   echo ""
   printf "  "
   type_text "Pick the one that sounds most useful to you." 0.03
@@ -332,17 +324,17 @@ pick_helper_phase() {
     "💡  Brainstorm ideas with me" \
     "🎨  Something else entirely"
 
-  HELPER_TYPE_INDEX=$MENU_RESULT
+  AGENT_TYPE_INDEX=$MENU_RESULT
 
-  case $HELPER_TYPE_INDEX in
-    0) HELPER_TYPE="email" ;;
-    1) HELPER_TYPE="summarize" ;;
-    2) HELPER_TYPE="brainstorm" ;;
-    3) HELPER_TYPE="custom" ;;
+  case $AGENT_TYPE_INDEX in
+    0) AGENT_TYPE="email" ;;
+    1) AGENT_TYPE="summarize" ;;
+    2) AGENT_TYPE="brainstorm" ;;
+    3) AGENT_TYPE="custom" ;;
   esac
 
   local choice_labels=("writing better emails" "summarizing documents" "brainstorming ideas" "something custom")
-  local chosen="${choice_labels[$HELPER_TYPE_INDEX]}"
+  local chosen="${choice_labels[$AGENT_TYPE_INDEX]}"
 
   echo ""
   printf "  ${GREEN}${CHECK}${RESET} Great choice — ${BOLD}${chosen}${RESET}.\n"
@@ -351,21 +343,21 @@ pick_helper_phase() {
 }
 
 # ---------------------------------------------------------------------------
-# Phase 3 — Name Your Helper
+# Phase 3 — Name Your Agent
 # ---------------------------------------------------------------------------
 
-name_helper_phase() {
+name_agent_phase() {
   clear
   echo ""
   echo ""
-  printf "  ${BOLD}${WHITE}Every helper needs a name.${RESET}\n"
+  printf "  ${BOLD}${WHITE}Every agent needs a name.${RESET}\n"
   echo ""
   printf "  "
   type_text "It can be anything. Serious, silly, whatever feels right." 0.03
   echo ""
 
   local suggestions
-  case $HELPER_TYPE in
+  case $AGENT_TYPE in
     email)      suggestions="(Some people like: Echo, Scout, Penpal, Dash)" ;;
     summarize)  suggestions="(Some people like: Spark, Digest, Brief, Nutshell)" ;;
     brainstorm) suggestions="(Some people like: Muse, Bounce, Riff, Spark)" ;;
@@ -377,17 +369,17 @@ name_helper_phase() {
   printf "  ${BOLD}What should yours be called?${RESET}\n"
   echo ""
   printf "  ${CYAN}> ${RESET}"
-  read -r HELPER_NAME
+  read -r AGENT_NAME
 
-  if [ -z "$HELPER_NAME" ]; then
-    HELPER_NAME="Buddy"
+  if [ -z "$AGENT_NAME" ]; then
+    AGENT_NAME="Buddy"
   fi
 
-  HELPER_NAME="$(to_upper_first "$HELPER_NAME")"
+  AGENT_NAME="$(to_upper_first "$AGENT_NAME")"
 
   echo ""
   printf "  "
-  type_text "${HELPER_NAME}. I like it." 0.04
+  type_text "${AGENT_NAME}. I like it." 0.04
   echo ""
   sleep 0.6
 }
@@ -400,7 +392,7 @@ pick_personality_phase() {
   clear
   echo ""
   echo ""
-  printf "  ${BOLD}${WHITE}How should ${HELPER_NAME} talk?${RESET}\n"
+  printf "  ${BOLD}${WHITE}How should ${AGENT_NAME} talk?${RESET}\n"
   echo ""
   printf "  "
   type_text "This sets the tone for everything it writes." 0.03
@@ -426,7 +418,7 @@ pick_personality_phase() {
   PERSONALITY="${personality_names[$PERSONALITY_INDEX]}"
 
   echo ""
-  printf "  ${GREEN}${CHECK}${RESET} ${HELPER_NAME} will be ${BOLD}${personality_labels[$PERSONALITY_INDEX]}${RESET}.\n"
+  printf "  ${GREEN}${CHECK}${RESET} ${AGENT_NAME} will be ${BOLD}${personality_labels[$PERSONALITY_INDEX]}${RESET}.\n"
   echo ""
   sleep 0.8
 }
@@ -439,7 +431,7 @@ build_phase() {
   clear
   echo ""
   echo ""
-  printf "  ${BOLD}${WHITE}Building ${HELPER_NAME}...${RESET}\n"
+  printf "  ${BOLD}${WHITE}Building ${AGENT_NAME}...${RESET}\n"
   echo ""
   separator
   echo ""
@@ -447,9 +439,9 @@ build_phase() {
   # Create the agent directory
   mkdir -p "$AGENT_DIR" 2>/dev/null || true
 
-  # Compose the system prompt based on helper type
+  # Compose the system prompt based on agent type
   local type_instruction=""
-  case $HELPER_TYPE in
+  case $AGENT_TYPE in
     email)
       type_instruction="You help people write clear, effective emails. When given a topic or draft, you rewrite or compose an email that communicates the message well."
       ;;
@@ -460,7 +452,7 @@ build_phase() {
       type_instruction="You help people think through ideas. When given a topic, you offer creative angles, ask good questions, and help develop rough thoughts into clear concepts."
       ;;
     custom)
-      type_instruction="You're a flexible AI helper. You adapt to whatever task the user needs, always being clear and useful."
+      type_instruction="You're a flexible AI agent. You adapt to whatever task the user needs, always being clear and useful."
       ;;
   esac
 
@@ -481,11 +473,11 @@ build_phase() {
       ;;
   esac
 
-  show_progress "Creating a folder for ${HELPER_NAME}" 2
+  show_progress "Creating a folder for ${AGENT_NAME}" 2
 
   # Write the agent prompt file
   cat > "$AGENT_DIR/prompt.md" << AGENT_EOF
-# ${HELPER_NAME}
+# ${AGENT_NAME}
 
 ${type_instruction}
 
@@ -499,22 +491,22 @@ ${personality_instruction}
 - Use plain language — no jargon
 AGENT_EOF
 
-  show_progress "Writing ${HELPER_NAME}'s personality" 2
+  show_progress "Writing ${AGENT_NAME}'s personality" 2
 
-  # Write a sample input file based on helper type
+  # Write a sample input file based on agent type
   local sample_input=""
-  case $HELPER_TYPE in
+  case $AGENT_TYPE in
     email)
       sample_input="Subject: Following up on our meeting\n\nHey — just wanted to follow up on what we talked about yesterday. I think the timeline works but I have a couple questions about the budget. Can we chat Thursday?"
       ;;
     summarize)
-      sample_input="Paste any long text here and ${HELPER_NAME} will summarize it for you.\n\nTry it with an article, a long email chain, meeting notes, or any document that needs a quick summary."
+      sample_input="Paste any long text here and ${AGENT_NAME} will summarize it for you.\n\nTry it with an article, a long email chain, meeting notes, or any document that needs a quick summary."
       ;;
     brainstorm)
       sample_input="Topic: Planning a team offsite\n\nWe need ideas for a two-day team offsite for 15 people. Budget is moderate. Goal is team bonding plus strategic planning. The team is mostly remote."
       ;;
     custom)
-      sample_input="Write anything here and ${HELPER_NAME} will help.\n\nYou can ask it to write, edit, summarize, brainstorm, explain, or anything else you need."
+      sample_input="Write anything here and ${AGENT_NAME} will help.\n\nYou can ask it to write, edit, summarize, brainstorm, explain, or anything else you need."
       ;;
   esac
 
@@ -524,8 +516,8 @@ AGENT_EOF
   # Save state for the Copilot CLI skill to read later
   cat > "$STATE_FILE" << STATE_EOF
 USER_NAME="${USER_NAME}"
-HELPER_NAME="${HELPER_NAME}"
-HELPER_TYPE="${HELPER_TYPE}"
+AGENT_NAME="${AGENT_NAME}"
+AGENT_TYPE="${AGENT_TYPE}"
 PERSONALITY="${PERSONALITY}"
 AGENT_DIR="${AGENT_DIR}"
 CREATED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
@@ -550,7 +542,7 @@ STATE_EOF
   type_text "That's not a demo. That actually happened." 0.03
   sleep 1.0
   echo ""
-  type_text "${HELPER_NAME} exists now — on this machine, in a real folder you can open." 0.03
+  type_text "${AGENT_NAME} exists now — on this machine, in a real folder you can open." 0.03
   sleep 0.8
   type_text "You didn't install an app. You ${BOLD}built${RESET} something." 0.03
   sleep 0.6
@@ -575,7 +567,7 @@ show_creation_phase() {
   printf "  ${BOLD}${WHITE}Here's what's inside your folder:${RESET}\n"
   echo ""
   printf "  ${CYAN}~/my-first-agent/${RESET}\n"
-  printf "  ${DIM}├── ${RESET}prompt.md       ${DIM}← ${HELPER_NAME}'s personality & instructions${RESET}\n"
+  printf "  ${DIM}├── ${RESET}prompt.md       ${DIM}← ${AGENT_NAME}'s personality & instructions${RESET}\n"
   printf "  ${DIM}└── ${RESET}sample-input.txt ${DIM}← Something to try it on${RESET}\n"
   echo ""
   separator
@@ -597,12 +589,12 @@ show_creation_phase() {
   sleep 1.2
   type_text "Five minutes ago, you'd never opened a terminal." 0.03
   sleep 0.8
-  type_text "Now you have an AI helper called ${BOLD}${HELPER_NAME}${RESET} that follows instructions you wrote." 0.03
+  type_text "Now you have an AI agent called ${BOLD}${AGENT_NAME}${RESET} that follows instructions you wrote." 0.03
   sleep 1.4
   echo ""
   type_text "Not instructions someone gave you." 0.03
   sleep 0.5
-  type_text "${BOLD}Your${RESET} words. ${BOLD}Your${RESET} rules. ${BOLD}Your${RESET} helper." 0.03
+  type_text "${BOLD}Your${RESET} words. ${BOLD}Your${RESET} rules. ${BOLD}Your${RESET} agent." 0.03
   sleep 1.6
   echo ""
   type_text "That feeling right now — that little ${CYAN}wait, really?${RESET} — remember it." 0.03
@@ -623,7 +615,7 @@ demo_phase() {
   echo ""
   echo ""
 
-  printf "  ${BOLD}${WHITE}Let's see ${HELPER_NAME} in action.${RESET}\n"
+  printf "  ${BOLD}${WHITE}Let's see ${AGENT_NAME} in action.${RESET}\n"
   echo ""
   sleep 0.5
   printf "  "
@@ -634,7 +626,7 @@ demo_phase() {
 
   # Build a mock response based on type + personality
   local mock_response=""
-  case "${HELPER_TYPE}-${PERSONALITY}" in
+  case "${AGENT_TYPE}-${PERSONALITY}" in
     email-professional)
       mock_response="Subject: Meeting Follow-Up — Budget Questions
 
@@ -738,7 +730,7 @@ Tip: The more context you give me, the better I can help."
       ;;
   esac
 
-  printf "  ${DIM}┌─ ${HELPER_NAME}'s response ─────────────────────────┐${RESET}\n"
+  printf "  ${DIM}┌─ ${AGENT_NAME}'s response ─────────────────────────┐${RESET}\n"
   echo ""
 
   # Type out the mock response line by line
@@ -758,7 +750,7 @@ Tip: The more context you give me, the better I can help."
   echo ""
   sleep 0.3
   printf "  "
-  type_text "That's ${HELPER_NAME} doing its thing." 0.03
+  type_text "That's ${AGENT_NAME} doing its thing." 0.03
   echo ""
   printf "  "
   type_text "And you can change how it works just by editing that text file." 0.03
@@ -777,7 +769,7 @@ bridge_phase() {
   echo ""
 
   sleep 0.8
-  type_text "Right now, ${HELPER_NAME} lives on this computer." 0.03
+  type_text "Right now, ${AGENT_NAME} lives on this computer." 0.03
   sleep 0.6
   type_text "Which is fine — it works. But it's a little like writing a song and never saving the file." 0.03
   sleep 1.0
@@ -789,14 +781,14 @@ bridge_phase() {
   echo ""
   type_text "If you grab a free GitHub account, you can:" 0.03
   sleep 0.4
-  type_text "  ${GREEN}${CHECK}${RESET} Save ${HELPER_NAME} so it's yours permanently" 0.03
+  type_text "  ${GREEN}${CHECK}${RESET} Save ${AGENT_NAME} so it's yours permanently" 0.03
   sleep 0.3
   type_text "  ${GREEN}${CHECK}${RESET} Edit your prompt anytime and make it smarter" 0.03
   sleep 0.3
   type_text "  ${GREEN}${CHECK}${RESET} Run it for real inside GitHub Copilot" 0.03
   sleep 1.0
   echo ""
-  type_text "${DIM}Totally up to you. ${HELPER_NAME} isn't going anywhere either way.${RESET}" 0.03
+  type_text "${DIM}Totally up to you. ${AGENT_NAME} isn't going anywhere either way.${RESET}" 0.03
   echo ""
   echo ""
   sleep 0.3
@@ -889,7 +881,7 @@ handoff_phase() {
   type_text "You just proved it's for anyone with a good idea." 0.03
   sleep 1.4
   echo ""
-  type_text "${HELPER_NAME} is your first build. It doesn't have to be your last." 0.03
+  type_text "${AGENT_NAME} is your first build. It doesn't have to be your last." 0.03
   sleep 0.8
   type_text "Next time you open this window, try typing what you want to happen." 0.03
   sleep 0.5
@@ -908,7 +900,7 @@ handoff_phase() {
   printf "  ${BOLD}Here's what to do:${RESET}\n"
   echo ""
   printf "  ${CYAN}1.${RESET} When the new prompt appears, type: ${GREEN}${BOLD}first light${RESET}\n"
-  printf "  ${CYAN}2.${RESET} ${HELPER_NAME} will pick up right where we left off\n"
+  printf "  ${CYAN}2.${RESET} ${AGENT_NAME} will pick up right where we left off\n"
   printf "  ${CYAN}3.${RESET} You'll teach it your writing style and try it for real\n"
   echo ""
   sleep 0.5
@@ -917,7 +909,7 @@ handoff_phase() {
   type_text "Ready?" 0.06
   echo ""
 
-  pause_gentle "Press Enter to meet ${HELPER_NAME}..."
+  pause_gentle "Press Enter to meet ${AGENT_NAME}..."
 
   # --- Final summary screen ---
   clear
@@ -927,7 +919,7 @@ handoff_phase() {
   echo ""
   printf "  ${GREEN}${BOLD}${CHECK} Setup complete!${RESET}\n"
   echo ""
-  printf "  ${BOLD}Your helper:${RESET} ${CYAN}${HELPER_NAME}${RESET}\n"
+  printf "  ${BOLD}Your agent:${RESET} ${CYAN}${AGENT_NAME}${RESET}\n"
   printf "  ${BOLD}Your folder:${RESET} ${CYAN}~/my-first-agent/${RESET}\n"
   printf "  ${BOLD}Your state:${RESET}  ${CYAN}~/.first-light-state${RESET}\n"
   echo ""
@@ -965,8 +957,8 @@ handoff_phase() {
 main() {
   install_phase
   welcome_phase
-  pick_helper_phase
-  name_helper_phase
+  pick_agent_phase
+  name_agent_phase
   pick_personality_phase
   build_phase
   show_creation_phase

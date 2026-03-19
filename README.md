@@ -1,6 +1,6 @@
 # ✨ Copilot First Light
 
-> Build your first AI helper in 5 minutes. No coding. No experience needed.
+> Build your first AI agent with GitHub Copilot CLI in 5 minutes. No coding. No experience needed.
 
 ---
 
@@ -22,11 +22,11 @@ Everything else happens automatically. Just follow along. ✨
 
 ## What happens when I paste that?
 
-1. It installs what you need (silently, no questions asked)
-2. A friendly guide walks you through building your first AI helper
+1. It installs GitHub Copilot CLI (silently, no questions asked)
+2. A friendly guide walks you through building your first AI agent
 3. You pick what it does, give it a name, choose its personality
 4. You see it work — a real demo, right in front of you
-5. Your helper gets saved to your computer
+5. Your agent gets saved to your computer
 6. You can keep going inside GitHub Copilot CLI — just type `first light`
 
 ---
