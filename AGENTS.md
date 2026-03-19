@@ -10,7 +10,7 @@ First Light has two parts that work together:
 
 This is the starting point. It's a friendly, animated script that runs in your terminal and walks you through:
 
-- Picking what your helper does (emails, summaries, brainstorming, etc.)
+- Picking what your agent does (emails, summaries, brainstorming, etc.)
 - Giving it a name
 - Choosing its personality
 - Watching it get built — real files, right on your computer
@@ -25,7 +25,7 @@ This picks up where the quickstart left off. When you open the Copilot CLI and t
 
 - Reads your saved choices from the quickstart
 - Welcomes you back by name
-- Teaches your helper YOUR writing style (by looking at a sample)
+- Teaches your agent YOUR writing style (by looking at a sample)
 - Shows you real AI output customized to your voice
 - Lets you tweak it until it feels right
 - Reveals what you actually accomplished (more than you think)
@@ -51,7 +51,7 @@ When you run the quickstart, it creates:
 
 ```
 ~/my-first-agent/
-├── prompt.md         ← Your helper's instructions and personality
+├── prompt.md         ← Your agent's instructions and personality
 └── sample-input.txt  ← Something to try it on
 ```
 
@@ -71,7 +71,7 @@ Open the Copilot CLI and type "first light" — it'll pick up where you left off
 
 Everything is just text files. Open them in any editor:
 
-- Want your helper to be funnier? Edit `~/my-first-agent/prompt.md`
+- Want your agent to be funnier? Edit `~/my-first-agent/prompt.md`
 - Want to try a different personality? Run the quickstart again
 - Want to start over completely? Delete `~/my-first-agent/` and `~/.first-light-state`
 
