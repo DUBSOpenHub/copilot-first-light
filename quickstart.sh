@@ -794,7 +794,10 @@ intro_cinematic() {
     i=$(( i + 1 ))
   done
 
-  local reveal_row=3
+  # Vertically center the welcome content (16 rows tall)
+  local content_height=16
+  local reveal_row=$(( (ch - content_height) / 2 ))
+  [ "$reveal_row" -lt 2 ] && reveal_row=2
   printf '\033[%d;3H' "$reveal_row"
   # Sparkle border types in
   local al_len=${#accent_line}
