@@ -248,19 +248,19 @@ main() {
   # Scene 2: Install spinners flow right underneath the cinematic
   echo ""
 
-  if command_exists gh; then
-    printf '  %b✅%b  %s\n' "$GREEN" "$RESET" "GitHub CLI ready"
+  if command_exists gh && gh copilot --help >/dev/null 2>&1; then
+    printf '  %b✅%b  %s\n' "$GREEN" "$RESET" "The GitHub Copilot CLI is ready"
   else
-    run_with_spinner "Setting up GitHub CLI" install_gh_cli || die "Could not install GitHub CLI."
+    if ! command_exists gh; then
+      run_with_spinner "Setting up the GitHub Copilot CLI" install_gh_cli || die "Could not install GitHub CLI."
+    fi
+    if ! gh copilot --help >/dev/null 2>&1; then
+      run_with_spinner "Setting up the GitHub Copilot CLI" install_gh_copilot || die "Could not set up the Copilot CLI."
+    fi
+    printf '  %b✅%b  %s\n' "$GREEN" "$RESET" "The GitHub Copilot CLI is ready"
   fi
 
-  if gh copilot --help >/dev/null 2>&1; then
-    printf '  %b✅%b  %s\n' "$GREEN" "$RESET" "The Copilot CLI is ready"
-  else
-    run_with_spinner "Setting up the Copilot CLI" install_gh_copilot || die "Could not set up the Copilot CLI."
-  fi
-
-  run_with_spinner "Preparing your experience" install_skill || die "Could not add the guide."
+  run_with_spinner "Preparing your first GitHub Copilot CLI experience" install_skill || die "Could not add the guide."
 
   # Scene 3: Flows right into "Hey there" — no screen clear
   if launch_animated; then
