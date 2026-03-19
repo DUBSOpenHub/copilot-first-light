@@ -1,0 +1,26 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Node
+node_modules/
+package-lock.json
+
+# Logs
+*.log
+
+# Temp
+tmp/
+
+# Environment
+.env
+
+# Session artifacts
+.copilot/session-state/
