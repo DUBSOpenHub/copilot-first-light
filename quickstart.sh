@@ -1005,7 +1005,7 @@ welcome_phase() {
   printf "  "
   type_text "$(random_greeting "${USER_NAME}")" 0.03
   echo ""
-  pause_gentle "Press Enter when you're ready..."
+  sleep 0.6
 }
 
 # ---------------------------------------------------------------------------
@@ -1136,8 +1136,6 @@ build_phase() {
   echo ""
   printf "  ${BOLD}${WHITE}Building ${AGENT_NAME}...${RESET}\n"
   echo ""
-  separator
-  echo ""
 
   # Create the agent directory
   mkdir -p "$AGENT_DIR" 2>/dev/null || true
@@ -1230,32 +1228,7 @@ STATE_EOF
   # --- The teaching moment ---
   printf "  ${BOLD}${WHITE}Done!${RESET}\n"
   echo ""
-  sleep 0.5
-  printf "  "
-  type_text "So." 0.04
   sleep 0.8
-  type_text "Those files that just appeared on your computer?" 0.03
-  sleep 0.6
-  type_text "That's not a demo. That actually happened." 0.03
-  sleep 1.0
-  echo ""
-  type_text "These files now live on your computer — in a real folder you can open:" 0.03
-  sleep 0.4
-  echo ""
-  printf "  ${CYAN}~/my-first-agent/${RESET}\n"
-  sleep 0.8
-  echo ""
-  type_text "You didn't install an app. You ${BOLD}built${RESET} something." 0.03
-  sleep 0.6
-  type_text "A prompt file, a config, a structure — the same pieces a developer would create." 0.03
-  sleep 0.8
-  type_text "All powered by the ${CYAN}GitHub Copilot CLI${RESET}." 0.03
-  sleep 1.4
-  type_text "${DIM}You just didn't need to be a developer to do it.${RESET}" 0.03
-  sleep 1.0
-  echo ""
-
-  pause_gentle "Press Enter to see what you built..."
 }
 
 # ---------------------------------------------------------------------------
@@ -1264,10 +1237,8 @@ STATE_EOF
 
 show_creation_phase() {
   echo ""
-  separator
-  echo ""
 
-  printf "  ${BOLD}${WHITE}Here's what's inside your folder:${RESET}\n"
+  printf "  These files now live on your computer:\n"
   echo ""
   printf "  ${CYAN}~/${AGENT_DIR##*/}/${RESET}\n"
   printf "  ${DIM}├── ${RESET}prompt.md       ${DIM}← ${AGENT_NAME}'s personality & instructions${RESET}\n"
@@ -1288,27 +1259,18 @@ show_creation_phase() {
   echo ""
   sleep 0.5
   printf "  "
-  type_text "Here's what I want you to sit with for a second." 0.03
-  sleep 1.2
-  type_text "Five minutes ago, you'd never opened a terminal." 0.03
+  type_text "You didn't install an app. You ${BOLD}built${RESET} something." 0.03
   sleep 0.8
-  type_text "Now you have an AI agent called ${BOLD}${AGENT_NAME}${RESET} that follows instructions you wrote." 0.03
-  sleep 1.4
+  type_text "A prompt file, a structure — the same pieces a developer would create." 0.03
+  sleep 0.6
+  type_text "All powered by the ${CYAN}GitHub Copilot CLI${RESET}." 0.03
+  sleep 1.0
   echo ""
-  type_text "Not instructions someone gave you." 0.03
-  sleep 0.5
   type_text "${BOLD}Your${RESET} words. ${BOLD}Your${RESET} rules. ${BOLD}Your${RESET} agent." 0.03
-  sleep 1.6
-  echo ""
-  type_text "That feeling right now — that little ${CYAN}wait, really?${RESET} — remember it." 0.03
-  sleep 0.8
-  type_text "That's what building feels like." 0.03
-  sleep 0.8
-  type_text "And this is just the beginning of what the ${CYAN}Copilot CLI${RESET} can do." 0.03
   sleep 1.2
+  type_text "${DIM}You just didn't need to be a developer to do it.${RESET}" 0.03
+  sleep 1.0
   echo ""
-
-  pause_gentle "Press Enter to continue..."
 }
 
 # ---------------------------------------------------------------------------
@@ -1462,17 +1424,9 @@ bridge_phase() {
   echo ""
 
   sleep 0.8
-  type_text "Right now, ${AGENT_NAME} lives on this computer." 0.03
+  type_text "${AGENT_NAME} lives on this computer right now, and it's yours." 0.03
   sleep 0.6
-  type_text "Which is fine — it works. But it's a little like writing a song and never saving the file." 0.03
-  sleep 1.0
-  echo ""
-  type_text "GitHub is where people keep the things they build." 0.03
-  sleep 0.5
-  type_text "Developers use it. And now AI-native builders like yourself can too — and it's free." 0.03
-  sleep 1.0
-  echo ""
-  type_text "If you grab a free GitHub account, you can:" 0.03
+  type_text "Want to take it further? A free GitHub account lets you:" 0.03
   sleep 0.4
   type_text "  ${GREEN}${CHECK}${RESET} Save ${AGENT_NAME} so it's yours permanently" 0.03
   sleep 0.3
@@ -1557,37 +1511,22 @@ bridge_phase() {
       printf "  ${GREEN}${CHECK}${RESET} "
       type_text "Welcome back, ${USER_NAME}!" 0.04
       echo ""
-      printf "  "
-      type_text "Now run this to connect your account:" 0.03
-      echo ""
-      printf "  ${CYAN}  gh auth login${RESET}\n"
-      echo ""
       ;;
     1)
-      # Already has an account
+      # Already has an account — acknowledge and move on
       printf "  ${GREEN}${CHECK}${RESET} Awesome — you're all set.\n"
       echo ""
       sleep 0.3
-      printf "  "
-      type_text "If you haven't logged in recently, you might need to run:" 0.03
-      echo ""
-      printf "  ${CYAN}  gh auth login${RESET}\n"
-      echo ""
       ;;
     2)
       printf "  "
       type_text "No worries at all. You can do this anytime." 0.03
       echo ""
       printf "  "
-      type_text "Everything you built today is saved on your computer." 0.03
-      echo ""
-      printf "  "
       type_text "When you're ready: ${CYAN}github.com/signup${RESET}" 0.03
       echo ""
       ;;
   esac
-
-  pause_gentle "Press Enter for the final step..."
 }
 
 # ---------------------------------------------------------------------------
@@ -1610,8 +1549,6 @@ handoff_phase() {
   type_text "${AGENT_NAME} is your first build. It doesn't have to be your last." 0.03
   sleep 0.8
   type_text "${CYAN}The Copilot CLI${RESET} is how you build the next one." 0.03
-  sleep 0.5
-  type_text "Just open this terminal and start talking." 0.03
   sleep 1.6
   echo ""
   type_text "${DIM}Go build things.${RESET}" 0.04
@@ -1621,26 +1558,6 @@ handoff_phase() {
   separator
   echo ""
 
-  printf "  ${BOLD}Here's what to do:${RESET}\n"
-  echo ""
-  printf "  ${CYAN}1.${RESET} When the new prompt appears, type: ${GREEN}${BOLD}first light${RESET}\n"
-  printf "  ${CYAN}2.${RESET} ${AGENT_NAME} will pick up right where we left off\n"
-  printf "  ${CYAN}3.${RESET} You'll teach it your writing style and try it for real\n"
-  echo ""
-  sleep 0.5
-
-  printf "  "
-  type_text "Ready?" 0.06
-  echo ""
-
-  pause_gentle "Press Enter to meet ${AGENT_NAME}..."
-
-  # --- Final summary screen ---
-  echo ""
-  separator
-  echo ""
-  separator
-  echo ""
   printf "  ${GREEN}${BOLD}${CHECK} Setup complete!${RESET}\n"
   echo ""
   sleep 1
@@ -1652,18 +1569,28 @@ handoff_phase() {
   separator
   echo ""
 
+  # Install the Copilot CLI Quickstart skill
+  local QUICKSTART_SKILL_DIR="$HOME/.copilot/skills/copilot-cli-quickstart"
+  local QUICKSTART_SKILL_URL="https://raw.githubusercontent.com/DUBSOpenHub/copilot-cli-quickstart/main/.github/skills/copilot-cli-quickstart/SKILL.md"
+
+  if [ ! -f "$QUICKSTART_SKILL_DIR/SKILL.md" ]; then
+    show_progress "Installing the Copilot CLI Quickstart" 2
+    mkdir -p "$QUICKSTART_SKILL_DIR" 2>/dev/null
+    curl -fsSL "$QUICKSTART_SKILL_URL" -o "$QUICKSTART_SKILL_DIR/SKILL.md" 2>/dev/null || true
+    if [ -s "$QUICKSTART_SKILL_DIR/SKILL.md" ]; then
+      printf "  ${GREEN}${CHECK}${RESET} Quickstart ready\n"
+    fi
+    echo ""
+  fi
+
   # Attempt to launch Copilot CLI directly
   if gh copilot --version &>/dev/null 2>&1; then
-    type_text "I'm about to open the Copilot CLI for you." 0.03
+    type_text "Next up: a guided tour of the Copilot CLI." 0.03
     echo ""
     sleep 0.8
-    type_text "When you see the prompt, just type: ${GREEN}${BOLD}first light${RESET}" 0.03
+    type_text "When you see the prompt, just type: ${GREEN}${BOLD}start tutorial${RESET}" 0.03
     echo ""
     sleep 0.8
-    type_text "${AGENT_NAME} will be there, ready to go." 0.03
-    echo ""
-    echo ""
-    sleep 1.5
     echo ""
     printf "  ${COPILOT_GOLD}✨ Become AI native and accelerate your work by using the GitHub Copilot CLI. ✨${RESET}\n"
     echo ""
@@ -1681,7 +1608,7 @@ handoff_phase() {
     printf "  ${CYAN}  gh extension install github/gh-copilot${RESET}\n"
     printf "  ${CYAN}  gh copilot${RESET}              ${DIM}← start Copilot CLI${RESET}\n"
     echo ""
-    printf "  Then type ${GREEN}${BOLD}first light${RESET} to pick up where you left off.\n"
+    printf "  Then type ${GREEN}${BOLD}start tutorial${RESET} to begin the guided quickstart.\n"
     echo ""
     printf "  ${COPILOT_GOLD}✨ Become AI native and accelerate your work by using the GitHub Copilot CLI. ✨${RESET}\n"
     echo ""
