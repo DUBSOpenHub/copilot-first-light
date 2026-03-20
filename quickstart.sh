@@ -179,6 +179,17 @@ show_progress() {
 to_lower() { echo "$1" | tr '[:upper:]' '[:lower:]'; }
 to_upper_first() { echo "$(echo "${1:0:1}" | tr '[:lower:]' '[:upper:]')${1:1}"; }
 
+# Strip shell-dangerous characters from user input
+sanitize_input() {
+  local val="$1"
+  val="${val//\"/}"
+  val="${val//\'/}"
+  val="${val//\`/}"
+  val="${val//\$/}"
+  val="${val//\\/}"
+  printf '%s' "$val"
+}
+
 # Randomized positive responses
 random_name_reaction() {
   local reactions=(
@@ -1008,6 +1019,7 @@ welcome_phase() {
     USER_NAME="friend"
   fi
 
+  USER_NAME="$(sanitize_input "$USER_NAME")"
   USER_NAME="$(to_upper_first "$USER_NAME")"
 
   echo ""
@@ -1087,6 +1099,7 @@ name_agent_phase() {
     AGENT_NAME="Buddy"
   fi
 
+  AGENT_NAME="$(sanitize_input "$AGENT_NAME")"
   AGENT_NAME="$(to_upper_first "$AGENT_NAME")"
 
   echo ""
@@ -1218,12 +1231,9 @@ AGENT_EOF
   show_progress "Adding a sample for you to try" 1
 
   # Save state for the Copilot CLI skill to read later
-  # Sanitize user input to prevent quote/newline corruption
-  local safe_user_name="${USER_NAME//\"/}"
-  local safe_agent_name="${AGENT_NAME//\"/}"
   cat > "$STATE_FILE" << STATE_EOF
-USER_NAME="${safe_user_name}"
-AGENT_NAME="${safe_agent_name}"
+USER_NAME="${USER_NAME}"
+AGENT_NAME="${AGENT_NAME}"
 AGENT_TYPE="${AGENT_TYPE}"
 PERSONALITY="${PERSONALITY}"
 AGENT_DIR="${AGENT_DIR}"
