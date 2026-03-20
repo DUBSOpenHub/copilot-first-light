@@ -1265,9 +1265,11 @@ show_creation_phase() {
   printf "  Let me show you what ${BOLD}prompt.md${RESET} looks like:\n"
   echo ""
 
-  # Display the prompt file with a left-border style
+  # Display the prompt file with a left-border style, typed out line by line
   while IFS= read -r line || [[ -n "$line" ]]; do
-    printf "  ${DIM}│${RESET} %s\n" "$line"
+    printf "  ${DIM}│${RESET} "
+    type_text "$line" 0.015
+    sleep 0.15
   done < "$AGENT_DIR/prompt.md"
 
   echo ""
