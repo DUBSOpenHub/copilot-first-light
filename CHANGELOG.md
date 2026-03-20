@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-03-20
+
+### Added
+- 🎓 **Copilot CLI Quickstart auto-install** — installs the quickstart skill at the end of First Light so users flow directly into a guided Copilot CLI tutorial
+- 🔧 **CI workflow** (`.github/workflows/ci.yml`) — validates `bash -n` on both shell scripts for every push and PR
+- 🛡️ **CodeQL workflow** (`.github/workflows/codeql.yml`) — weekly security scanning
+
+### Changed
+- 🖥️ **Show folder path in Done section** — users now see `~/my-first-agent/` immediately when told their files were created
+- ✏️ **Welcome text** — "This is where you can build" (added missing "can")
+- 📝 **Done section text** — changed to "These files now live on your computer" for clarity
+- 🎯 **Removed "Something else entirely" option** — three focused agent types (email, summarize, brainstorm) instead of a hollow generic fourth option
+- ⌨️ **Typewriter effect for prompt.md** — file contents now type out line by line instead of appearing as a wall of text
+- 💬 **Softened bridge phase tone** — celebrates what users built instead of implying it's incomplete
+- ⏸️ **Added pause after teaching moment** — "Your words. Your rules. Your agent." now has a gate before the demo starts
+- 📢 **Linux sudo transparency** — shows the user what command requires admin access instead of running silently
+
+### Fixed
+- 🛡️ **Input sanitization** — `sanitize_input()` strips shell-dangerous characters (`"`, `'`, `` ` ``, `$`, `\`) from all user input at entry point, preventing heredoc injection and state file corruption
+- 🔒 **TTY guard** — `exec < /dev/tty` now checks `/dev/tty` exists before redirecting, shows friendly error in headless environments
+- 🔗 **Hardcoded path references** — replaced remaining `~/my-first-agent/` literals with dynamic `${AGENT_DIR##*/}`
+
+### Removed
+- 🎨 **"Something else entirely" agent option** — generic custom agent that produced vague prompts without asking what the user wanted
+
 ## [1.0.0] - 2026-03-18
 
 ### Added
