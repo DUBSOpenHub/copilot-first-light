@@ -357,7 +357,7 @@ _draw_welcome_screen() {
   r=$(( r + 2 ))
   printf '\033[%d;3H  %s%sWelcome to the terminal.%s' "$r" "${BOLD}" "${COPILOT_BLUE}" "${RESET}"
   r=$(( r + 2 ))
-  printf '\033[%d;3H  %sThis is where you build your first AI agent with the GitHub Copilot CLI.%s' "$r" "${WHITE}" "${RESET}"
+  printf '\033[%d;3H  %sThis is where you can build your first AI agent with the GitHub Copilot CLI.%s' "$r" "${WHITE}" "${RESET}"
   r=$(( r + 1 ))
   printf '\033[%d;3H  %sTell it what to do. Shape how it thinks.%s' "$r" "${WHITE}" "${RESET}"
   r=$(( r + 1 ))
@@ -902,7 +902,7 @@ intro_cinematic() {
   reveal_row=$(( reveal_row + 2 ))
   printf '\033[%d;3H' "$reveal_row"
   printf '  %s' "${WHITE}"
-  type_text "  This is where you build your first AI agent with the GitHub Copilot CLI." 0.025
+  type_text "  This is where you can build your first AI agent with the GitHub Copilot CLI." 0.025
   printf '%s' "${RESET}"
   sleep 0.2
 
