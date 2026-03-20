@@ -1013,8 +1013,8 @@ welcome_phase() {
 # ---------------------------------------------------------------------------
 
 pick_agent_phase() {
-  clear
   echo ""
+  separator
   echo ""
   printf "  ${BOLD}${WHITE}What should your agent do?${RESET}\n"
   echo ""
@@ -1051,8 +1051,8 @@ pick_agent_phase() {
 # ---------------------------------------------------------------------------
 
 name_agent_phase() {
-  clear
   echo ""
+  separator
   echo ""
   printf "  ${BOLD}${WHITE}Every agent needs a name.${RESET}\n"
   echo ""
@@ -1092,8 +1092,8 @@ name_agent_phase() {
 # ---------------------------------------------------------------------------
 
 pick_personality_phase() {
-  clear
   echo ""
+  separator
   echo ""
   printf "  ${BOLD}${WHITE}How should ${AGENT_NAME} talk?${RESET}\n"
   echo ""
@@ -1131,8 +1131,8 @@ pick_personality_phase() {
 # ---------------------------------------------------------------------------
 
 build_phase() {
-  clear
   echo ""
+  separator
   echo ""
   printf "  ${BOLD}${WHITE}Building ${AGENT_NAME}...${RESET}\n"
   echo ""
@@ -1263,8 +1263,8 @@ STATE_EOF
 # ---------------------------------------------------------------------------
 
 show_creation_phase() {
-  clear
   echo ""
+  separator
   echo ""
 
   printf "  ${BOLD}${WHITE}Here's what's inside your folder:${RESET}\n"
@@ -1316,8 +1316,8 @@ show_creation_phase() {
 # ---------------------------------------------------------------------------
 
 demo_phase() {
-  clear
   echo ""
+  separator
   echo ""
 
   printf "  ${BOLD}${WHITE}Let's see ${AGENT_NAME} in action.${RESET}\n"
@@ -1457,8 +1457,8 @@ Wild card ideas:
 # ---------------------------------------------------------------------------
 
 bridge_phase() {
-  clear
   echo ""
+  separator
   echo ""
 
   sleep 0.8
@@ -1501,8 +1501,8 @@ bridge_phase() {
   case $bridge_choice in
     0)
       # No account — guide them to claim one
-      clear
       echo ""
+      separator
       echo ""
       printf "  "
       type_text "Here's what's about to happen:" 0.03
@@ -1595,8 +1595,8 @@ bridge_phase() {
 # ---------------------------------------------------------------------------
 
 handoff_phase() {
-  clear
   echo ""
+  separator
   echo ""
 
   sleep 1.0
@@ -1636,8 +1636,8 @@ handoff_phase() {
   pause_gentle "Press Enter to meet ${AGENT_NAME}..."
 
   # --- Final summary screen ---
-  clear
   echo ""
+  separator
   echo ""
   separator
   echo ""
