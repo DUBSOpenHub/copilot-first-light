@@ -15,7 +15,12 @@ set -euo pipefail
 # Pipe-safety: restore interactive stdin when run via curl|bash
 # ---------------------------------------------------------------------------
 if [ ! -t 0 ]; then
-  exec < /dev/tty
+  if [ -c /dev/tty ]; then
+    exec < /dev/tty
+  else
+    echo "Error: This script requires an interactive terminal." >&2
+    exit 1
+  fi
 fi
 
 # ---------------------------------------------------------------------------
@@ -266,9 +271,13 @@ install_phase() {
         ;;
       linux)
         if command -v apt-get &>/dev/null; then
-          (sudo apt-get update -qq && sudo apt-get install -y -qq gh) &>/dev/null 2>&1 || true
+          printf "\n  The GitHub CLI needs to be installed. This requires admin access.\n"
+          printf "  ${CYAN}Running: sudo apt-get install gh${RESET}\n\n"
+          (sudo apt-get update -qq && sudo apt-get install -y -qq gh) 2>&1 || true
         elif command -v dnf &>/dev/null; then
-          sudo dnf install -y gh &>/dev/null 2>&1 || true
+          printf "\n  The GitHub CLI needs to be installed. This requires admin access.\n"
+          printf "  ${CYAN}Running: sudo dnf install gh${RESET}\n\n"
+          sudo dnf install -y gh 2>&1 || true
         fi
         ;;
     esac
@@ -1209,13 +1218,16 @@ AGENT_EOF
   show_progress "Adding a sample for you to try" 1
 
   # Save state for the Copilot CLI skill to read later
+  # Sanitize user input to prevent quote/newline corruption
+  local safe_user_name="${USER_NAME//\"/}"
+  local safe_agent_name="${AGENT_NAME//\"/}"
   cat > "$STATE_FILE" << STATE_EOF
-USER_NAME="${USER_NAME}"
-AGENT_NAME="${AGENT_NAME}"
+USER_NAME="${safe_user_name}"
+AGENT_NAME="${safe_agent_name}"
 AGENT_TYPE="${AGENT_TYPE}"
 PERSONALITY="${PERSONALITY}"
 AGENT_DIR="${AGENT_DIR}"
-CREATED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+CREATED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 STATE_EOF
 
   show_progress "Saving your choices" 1
@@ -1273,6 +1285,8 @@ show_creation_phase() {
   type_text "${DIM}You just didn't need to be a developer to do it.${RESET}" 0.03
   sleep 1.0
   echo ""
+
+  pause_gentle "Press Enter to continue..."
 }
 
 # ---------------------------------------------------------------------------
