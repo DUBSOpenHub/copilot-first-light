@@ -32,6 +32,8 @@ Every file in this repo has a specific role. **Do not move, rename, or repurpose
 | `CHANGELOG.md` | Release history. Update under `[Unreleased]` for every PR. | ✅ Yes |
 | `TESTING.md` | Conversation playbooks and QA checklist. | ✅ Yes |
 | `.gitignore` | Standard ignores for shell/Node. | ✅ Yes |
+| `.github/workflows/ci.yml` | CI — validates `bash -n` on push and PR. | ✅ Yes |
+| `.github/workflows/codeql.yml` | CodeQL security scanning (weekly + push/PR). | ✅ Yes |
 | `.github/CODEOWNERS` | All files owned by @DUBSOpenHub. | ⛔ No |
 | `.github/dependabot.yml` | Dependabot config. | ✅ Yes |
 
@@ -63,6 +65,9 @@ copilot-first-light/
 └── .github/
     ├── CODEOWNERS                             ← * @DUBSOpenHub
     ├── dependabot.yml                         ← Dependabot config
+    ├── workflows/
+    │   ├── ci.yml                             ← bash -n validation
+    │   └── codeql.yml                         ← Security scanning
     └── skills/
         └── copilot-first-light/
             └── SKILL.md                       ← Copilot CLI skill
@@ -74,10 +79,12 @@ copilot-first-light/
 
 ### Shell Scripts (`quickstart.sh`, `install.sh`)
 
-- **All changes must pass `bash -n`** — run `bash -n quickstart.sh && bash -n install.sh` before every commit. Zero warnings required.
+- **All changes must pass `bash -n`** — run `bash -n quickstart.sh && bash -n install.sh` before every commit. Zero warnings required. CI enforces this automatically.
+- **All user input is sanitized** — `sanitize_input()` strips shell-dangerous characters (`"`, `'`, `` ` ``, `$`, `\`) from `USER_NAME` and `AGENT_NAME` at entry point. Never use raw `read` values in heredocs or printf without sanitization.
 - Never pipe from the internet directly to `bash` without user confirmation.
 - Preserve the animated, emoji-rich UX. This is not a utility script — it's an experience.
 - The state file path (`~/.first-light-state`) is a contract between `quickstart.sh` and `SKILL.md`. Change both if you change either.
+- At the end of the flow, `quickstart.sh` installs the [Copilot CLI Quickstart](https://github.com/DUBSOpenHub/copilot-cli-quickstart) skill and launches `gh copilot`. This creates a seamless onboarding chain.
 
 ### SKILL.md
 

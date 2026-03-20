@@ -4,6 +4,7 @@
 
 | Version | Supported |
 |---------|-----------|
+| 1.1.x   | ✅ Yes     |
 | 1.0.x   | ✅ Yes     |
 
 ## 🚨 Reporting a Vulnerability
@@ -40,11 +41,11 @@ This repository has the following GitHub security features configured:
 |---------|--------|-------|
 | ✅ Dependabot Alerts | Enabled | Monitors dependencies for known vulnerabilities |
 | ✅ Dependabot Security Updates | Enabled | Auto-creates PRs to fix vulnerable dependencies |
-| 🔒 Secret Scanning | Available when public | Detects accidentally committed secrets |
-| 🔒 Secret Scanning Push Protection | Available when public | Blocks pushes containing secrets |
-| 🔒 Code Scanning (CodeQL) | Available when public | Static analysis for security bugs |
+| ✅ Secret Scanning | Enabled | Detects accidentally committed secrets |
+| ✅ Secret Scanning Push Protection | Enabled | Blocks pushes containing secrets |
+| ✅ Code Scanning (CodeQL) | Enabled | Static analysis for security bugs (weekly + push/PR) |
 
-> 💡 **Note:** Secret scanning, push protection, and CodeQL code scanning are automatically enabled when this repository is made public. For private repos, these features require [GitHub Advanced Security](https://docs.github.com/en/get-started/learning-about-github/about-github-advanced-security).
+> 💡 **Note:** All five GitHub security features are active on this repository.
 
 ## 🔏 Privacy & Data Practices
 
@@ -60,9 +61,10 @@ This project's scripts are designed with user safety in mind:
 Since this project ships shell scripts and Copilot CLI skill instructions, the primary security considerations are:
 
 - 🔑 **No secrets in skill or agent files** — `SKILL.md` and `agent.md` should never contain API keys, tokens, or credentials
+- 🛡️ **Input sanitization** — all user input is sanitized via `sanitize_input()` which strips `"`, `'`, `` ` ``, `$`, and `\` to prevent heredoc injection and state file corruption
 - 📜 **Safe shell scripts** — `quickstart.sh` and `install.sh` should never pipe directly from the internet to `bash` without user confirmation
 - 🔍 **Dependency awareness** — if dependencies are added in the future, keep them updated via Dependabot
-- 🧪 **Validate bash changes** — all shell script changes must pass `bash -n` syntax checking
+- 🧪 **Validate bash changes** — all shell script changes must pass `bash -n` syntax checking (enforced by CI)
 
 ## 📄 License
 

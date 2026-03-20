@@ -31,9 +31,21 @@ One continuous experience — no interruptions:
 5. 📁 Real files get created on your computer — you watch it happen
 6. 🎯 A live demo shows your agent in action
 7. 🌐 You claim a free GitHub account to save your work
-8. 🚀 You land in the Copilot CLI ready to keep building
+8. 🚀 The **Copilot CLI Quickstart** tutorial launches automatically — keep learning
 
 All powered by the GitHub Copilot CLI.
+
+---
+
+## Screenshots
+
+| Welcome | Build | Done |
+|---------|-------|------|
+| ![Welcome](docs/screenshots/01-welcome.png) | ![Building](docs/screenshots/03-building.png) | ![Done](docs/screenshots/04-done.png) |
+
+| Handoff | Quickstart |
+|---------|------------|
+| ![Handoff](docs/screenshots/05-handoff.png) | ![Quickstart](docs/screenshots/06-quickstart.png) |
 
 ---
 
