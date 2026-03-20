@@ -1606,13 +1606,16 @@ handoff_phase() {
     type_text "Next up: a guided tour of the Copilot CLI." 0.03
     echo ""
     sleep 0.8
+    type_text "When the prompt appears, just type: ${GREEN}${BOLD}start tutorial${RESET}" 0.03
+    echo ""
+    sleep 0.8
     echo ""
     printf "  ${COPILOT_GOLD}✨ Become AI native and accelerate your work by using the GitHub Copilot CLI. ✨${RESET}\n"
     echo ""
     sleep 2.0
-    pause_gentle "Press Enter to start the tutorial..."
+    pause_gentle "Press Enter to launch the Copilot CLI..."
     echo ""
-    exec gh copilot -- -i "start tutorial"
+    exec gh copilot
   else
     # Graceful fallback with manual instructions
     printf "  ${YELLOW}${BOLD}Almost there!${RESET}\n"
