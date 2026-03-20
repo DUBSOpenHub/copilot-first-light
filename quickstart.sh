@@ -1027,8 +1027,7 @@ pick_agent_phase() {
   menu_select \
     "📧  Help me write better emails" \
     "📋  Summarize long documents" \
-    "💡  Brainstorm ideas with me" \
-    "🎨  Something else entirely"
+    "💡  Brainstorm ideas with me"
 
   AGENT_TYPE_INDEX=$MENU_RESULT
 
@@ -1036,10 +1035,9 @@ pick_agent_phase() {
     0) AGENT_TYPE="email" ;;
     1) AGENT_TYPE="summarize" ;;
     2) AGENT_TYPE="brainstorm" ;;
-    3) AGENT_TYPE="custom" ;;
   esac
 
-  local choice_labels=("writing better emails" "summarizing documents" "brainstorming ideas" "something custom")
+  local choice_labels=("writing better emails" "summarizing documents" "brainstorming ideas")
   local chosen="${choice_labels[$AGENT_TYPE_INDEX]}"
 
   echo ""
@@ -1067,7 +1065,6 @@ name_agent_phase() {
     email)      suggestions="(Some people like: Echo, Scout, Penpal, Dash)" ;;
     summarize)  suggestions="(Some people like: Spark, Digest, Brief, Nutshell)" ;;
     brainstorm) suggestions="(Some people like: Muse, Bounce, Riff, Spark)" ;;
-    custom)     suggestions="(Some people like: Sidekick, Kit, Helper, Buddy)" ;;
   esac
 
   printf "  ${DIM}${suggestions}${RESET}\n"
@@ -1157,9 +1154,6 @@ build_phase() {
     brainstorm)
       type_instruction="You help people think through ideas. When given a topic, you offer creative angles, ask good questions, and help develop rough thoughts into clear concepts."
       ;;
-    custom)
-      type_instruction="You're a flexible AI agent. You adapt to whatever task the user needs, always being clear and useful."
-      ;;
   esac
 
   # Compose the personality instruction
@@ -1211,9 +1205,6 @@ AGENT_EOF
     brainstorm)
       sample_input="Topic: Planning a team offsite\n\nWe need ideas for a two-day team offsite for 15 people. Budget is moderate. Goal is team bonding plus strategic planning. The team is mostly remote."
       ;;
-    custom)
-      sample_input="Write anything here and ${AGENT_NAME} will help.\n\nYou can ask it to write, edit, summarize, brainstorm, explain, or anything else you need."
-      ;;
   esac
 
   printf "%b" "$sample_input" > "$AGENT_DIR/sample-input.txt"
@@ -1248,8 +1239,12 @@ STATE_EOF
   type_text "That's not a demo. That actually happened." 0.03
   sleep 1.0
   echo ""
-  type_text "${AGENT_NAME} exists now — on this machine, in a real folder you can open." 0.03
+  type_text "${AGENT_NAME} exists now — on this machine, in a real folder you can open:" 0.03
+  sleep 0.4
+  echo ""
+  printf "  ${CYAN}~/my-first-agent/${RESET}\n"
   sleep 0.8
+  echo ""
   type_text "You didn't install an app. You ${BOLD}built${RESET} something." 0.03
   sleep 0.6
   type_text "A prompt file, a config, a structure — the same pieces a developer would create." 0.03
@@ -1274,7 +1269,7 @@ show_creation_phase() {
 
   printf "  ${BOLD}${WHITE}Here's what's inside your folder:${RESET}\n"
   echo ""
-  printf "  ${CYAN}~/my-first-agent/${RESET}\n"
+  printf "  ${CYAN}~/${AGENT_DIR##*/}/${RESET}\n"
   printf "  ${DIM}├── ${RESET}prompt.md       ${DIM}← ${AGENT_NAME}'s personality & instructions${RESET}\n"
   printf "  ${DIM}└── ${RESET}sample-input.txt ${DIM}← Something to try it on${RESET}\n"
   echo ""
@@ -1425,18 +1420,6 @@ Day 2 — Strategy
 Wild card ideas:
 • Start with a remote work show and tell
 • End with handwritten notes to each team member"
-      ;;
-    custom-*)
-      mock_response="I'm ready to help! Here's what I can do:
-
-• Write or rewrite anything — emails, messages, documents
-• Summarize long text into key points
-• Help you think through ideas and problems
-• Explain complex topics in plain language
-
-Just paste some text or tell me what you need.
-
-Tip: The more context you give me, the better I can help."
       ;;
   esac
 
@@ -1663,7 +1646,7 @@ handoff_phase() {
   sleep 1
   printf "  ${BOLD}Your agent:${RESET} ${CYAN}${AGENT_NAME}${RESET}\n"
   sleep 0.5
-  printf "  ${BOLD}Your folder:${RESET} ${CYAN}~/my-first-agent/${RESET}\n"
+  printf "  ${BOLD}Your folder:${RESET} ${CYAN}~/${AGENT_DIR##*/}/${RESET}\n"
   echo ""
   sleep 1.5
   separator
