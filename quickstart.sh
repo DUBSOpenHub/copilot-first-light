@@ -1239,7 +1239,7 @@ STATE_EOF
   type_text "That's not a demo. That actually happened." 0.03
   sleep 1.0
   echo ""
-  type_text "${AGENT_NAME} exists now — on this machine, in a real folder you can open:" 0.03
+  type_text "These files now live on your computer — in a real folder you can open:" 0.03
   sleep 0.4
   echo ""
   printf "  ${CYAN}~/my-first-agent/${RESET}\n"
